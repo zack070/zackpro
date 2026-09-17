@@ -20,13 +20,13 @@ There are three sample batches available for local testing:
 
 Each contains `payments.csv` and `invoices.csv`. They cover different customers and amounts and are not the batch used for grading.
 
-The final run uses one separate held-out batch. Its customers and amounts are different from the supplied samples. The grader imports your module, calls `match()` once, and then calculates the score itself from the mapping you return. An invalid assignment, such as one using a nonexistent ID or crossing customers, is dropped during that replay rather than causing a special exception.
+The final run uses one separate held-out batch. Its customers and amounts are different from the supplied samples. The grader imports your module and calls `match()` twice with the same held-out batch, to check the determinism requirement below, then calculates the score itself from the first call's returned mapping. An invalid assignment, such as one using a nonexistent ID or crossing customers, is dropped during that replay rather than causing a special exception.
 
 There is a hidden pass/fail quality bar for the held-out batch. It was calibrated by direct measurement of performance on that data. Clearing the bar is required; producing a mapping that merely runs is not enough.
 
-Keep the result deterministic. The same input lists should always lead to the same mapping. This is one batch call, not an interactive process.
+Keep the result deterministic. The same input lists should always lead to the same mapping, including across the two calls described above. This is a batch computation, not an interactive process.
 
-There is a combined 90-second wall-clock limit for the scoring pass. Time spent inside `match()` counts toward it, so make sure the final implementation actually finishes within that limit. A timeout is treated as a failed submission.
+There is a combined 140-second wall-clock limit for the two `match()` calls together. Time spent inside `match()` counts toward it, so make sure the final implementation actually finishes both calls within that limit. A timeout is treated as a failed submission.
 
 The engine and sample data are there for you to test with. Leave the engine itself unchanged.
 

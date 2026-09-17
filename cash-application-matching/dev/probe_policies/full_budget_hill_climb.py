@@ -11,7 +11,9 @@ import random
 import time
 
 TOLERANCE_CENTS = 50
-TIME_BUDGET = 80.0
+TIME_BUDGET = 60.0  # match() is now called twice per grading run (determinism
+                    # check), so this must comfortably fit within half of
+                    # the Stage 1 timeout
 
 
 def _by_customer(payments, invoices):

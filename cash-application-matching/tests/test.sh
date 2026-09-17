@@ -28,8 +28,10 @@ write_reward() {
 }
 
 # --- Stage 1: untrusted. Executes the candidate's policy code, isolated
-# as an unprivileged user, own process group, firm timeout. ---
-timeout -k 5 90 su -s /bin/bash runner -c "python3 /tests/collect_agent_output.py" > "$WORK_DIR/stage1.log" 2>&1
+# as an unprivileged user, own process group, firm timeout. match() is
+# called twice (to test the determinism requirement in Stage 2), so this
+# budget covers two calls plus import/IO overhead. ---
+timeout -k 5 140 su -s /bin/bash runner -c "python3 /tests/collect_agent_output.py" > "$WORK_DIR/stage1.log" 2>&1
 STAGE1_STATUS=$?
 cat "$WORK_DIR/stage1.log"
 

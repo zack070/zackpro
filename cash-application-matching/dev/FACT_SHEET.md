@@ -18,17 +18,17 @@ secret to discover.
   (10800 must match `[agent].timeout_sec` in task.toml.)
 - Keep the whole file well under ~10,000 characters, and avoid restating
   `environment/engine/README.md`'s contract in full.
-- Do not state the exact pass bar (1,200,000 cents / $12,000.00), or any
+- Do not state the exact pass bar (1,250,000 cents / $12,500.00), or any
   of the calibration numbers measured on the held-out scenario (best
-  adversarial probe $55,077.92, full-budget plain hill-climb $16,181.85,
-  adaptive annealing reference $9,274.70) -- say that a quality bar exists
-  and was calibrated by direct measurement, without giving the numbers.
-  Also do not say anything about HOW MUCH of the 90-second time budget is
-  worth using, or that using more time helps -- that is itself part of
-  what a submission needs to work out (a plain hill climb given the full
-  budget does not clear the bar; a better algorithm using the same budget
-  does), and stating it directly would hand over the exact insight a
-  reviewer's own measurement caught this task missing before.
+  adversarial probe $55,077.92, reference $11,509.37) -- say that a
+  quality bar exists and was calibrated by direct measurement, without
+  giving the numbers. Also do not say anything characterizing how much
+  compute or what kind of algorithm is worth using -- working that out is
+  part of the task, and stating it would hand over the exact insight a
+  reviewer's own measurement caught this task missing before (an earlier
+  version implied "use more time" was the lever; it wasn't -- a plain
+  hill climb given a full time budget still fails, and the actual
+  reference uses a small, fixed amount of computation, not a large one).
 - Do not describe the reference solution's specific approach (simulated
   annealing, or the bitmask-DP cross-check), AND do not name or hint at
   the underlying problem class (do not say "combinatorial matching,"
@@ -70,7 +70,11 @@ secret to discover.
   `customer_id`/`amount_cents` or `invoice_id`/`customer_id`/
   `amount_due_cents` respectively -- exact field names as given in
   `engine/README.md` and `engine.py`'s `Payment`/`Invoice` definitions.
-  `match` is called exactly once. It returns a dict mapping
+  `match` is called TWICE per grading run, with the same inputs both
+  times, specifically to verify the determinism requirement below -- the
+  agent needs to know this so they don't write anything with hidden state
+  or side effects that would behave differently across the two calls. It
+  returns a dict mapping
   `payment_id -> invoice_id` for every payment the agent wants applied;
   omitting a payment_id (or mapping it to `None`) leaves it unapplied.
 - The module must contain no other required interface; the agent may
@@ -80,14 +84,15 @@ secret to discover.
 ## How grading works (state that this exists; do not give the numbers)
 
 - The submitted `policy.py` is imported and its `match()` function is
-  called once against a single held-out batch the agent never sees the
+  called TWICE against a single held-out batch the agent never sees the
   data for -- different customers, different amounts, from any sample
   scenario provided. This is why testing only against the given samples
   is not sufficient by itself; the policy needs to generalize.
-- Only the returned mapping is used for scoring; grading independently
-  recomputes the cost from that mapping under the same rules (an
-  assignment that wasn't actually legal -- e.g. a cross-customer match, or
-  a nonexistent id -- is simply dropped, not an error).
+- Both returned mappings are checked for exact equality (the determinism
+  requirement, actually enforced -- see below); the first mapping is also
+  independently rescored under the real rules (an assignment that wasn't
+  actually legal -- e.g. a cross-customer match, or a nonexistent id -- is
+  simply dropped, not an error).
 - There is a hidden pass/fail cost bar for the held-out scenario. It was
   calibrated by directly measuring several different approaches' real
   performance on the held-out data and confirming a substantial, real gap
@@ -96,14 +101,21 @@ secret to discover.
   how many or what kind of approaches were measured, and without
   characterizing what distinguishes the weaker from the stronger ones.
 - `match` must be deterministic: the same inputs should always produce
-  the same returned mapping. There is no live/interactive element to this
-  task -- it is a single batch computation, not something called
-  repeatedly over simulated time.
-- Grading runs the whole scoring pass under a combined wall-clock budget
-  of 90 seconds for match() to return. State this concrete number --
-  heavy computation (deep search, many restarts, exhaustive enumeration)
+  the same returned mapping. This IS actually tested (the two calls above
+  must return identical mappings) -- state this plainly and accurately,
+  since a previous version stated this requirement without it being
+  tested, which was itself flagged as a real problem. There is no
+  live/interactive element to this task -- it is a batch computation, not
+  something called repeatedly over simulated time.
+- Grading gives the two `match()` calls together a combined wall-clock
+  budget of 140 seconds. State this concrete number -- heavy computation
   counts against this budget, and a policy that runs out of time fails
-  the same way a crashing one does.
+  the same way a crashing one does. Do NOT suggest that using more of this
+  budget helps quality, or that a specific amount of computation is
+  needed -- a deterministic policy using a small, fixed, modest amount of
+  computation is entirely capable of clearing the bar; the budget exists
+  as a safety ceiling against runaway computation, not as a resource to
+  maximize.
 - A policy.py that fails to import, does not define `match`, or raises
   when called is treated as a failing submission, not a partial-credit
   case.

@@ -50,6 +50,19 @@ def test_policy_present_and_loadable(collected):
     assert collected["status"] == "ok", collected
 
 
+def test_deterministic_output(collected):
+    """The instruction requires match() to be deterministic: the same
+    input lists must always produce the same returned mapping. Stage 1
+    called match() twice with identical inputs; this independently checks
+    the two raw returned mappings for exact equality -- it does not trust
+    any comparison Stage 1 might have made itself."""
+    assert collected["status"] == "ok", collected
+    assert collected["matching"] == collected["matching_2"], (
+        "match() returned a different mapping on a second call with the same inputs; "
+        "the instruction requires deterministic output"
+    )
+
+
 def test_cost_within_pass_bar(result, pass_bar):
     assert result.total_cost_cents <= pass_bar, (
         f"cost {result.total_cost_cents} exceeds pass bar {pass_bar} "
