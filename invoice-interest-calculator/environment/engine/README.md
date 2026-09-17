@@ -72,7 +72,11 @@ or refunded.
 
 **Rounding**: do all accrual arithmetic in exact (non-floating-point)
 arithmetic with no intermediate rounding. Round only the single final
-number you return, to the nearest cent (round-half-up).
+number you return, to the nearest cent (round-half-up). The grader
+checks each returned balance against the correct value within a
+5-cent tolerance, to allow for a legitimate but different rounding
+order (e.g. rounding each day's accrual instead of only the final
+total) without penalizing it.
 
 ## Output
 
