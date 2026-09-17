@@ -1,29 +1,29 @@
-Work from `/app` and submit the finished policy as `/app/outputs/policy.py`.
+Work in `/app`. The file you need to leave behind is `/app/outputs/policy.py`.
 
-The scheduling rules are already implemented. Read `/app/sim/README.md` for the simulator contract and use `/app/sim/simulator.py` when you need to check how that contract is represented in code. In particular, the `TechSnapshot` and `JobSnapshot` definitions describe the state passed to the policy.
+The simulator is already built. `/app/sim/README.md` is the contract for how it behaves, so use that as the reference for the scheduling rules and scoring. The implementation is in `/app/sim/simulator.py` too. The `TechSnapshot` and `JobSnapshot` definitions there show exactly what `state` contains.
 
-The module needs one callable entry point:
+Your module needs to provide:
 
 `def decide(state) -> list[tuple[str, str]]`
 
-A call happens when work can be assigned during the shift. Use the state you receive to choose immediate technician/job assignments. Returning an empty list is allowed. The simulator ignores an assignment that is not valid at that moment, and when a technician or job is named more than once in the same returned list, its first occurrence is the one that counts.
+The simulator asks this function for assignments during the shift. Give back `(technician_id, job_id)` pairs when you want work assigned, or an empty list if you want to leave things alone. The state passed in is the current scheduling state. You can add whatever helpers or internal bookkeeping you find useful, but `decide` is the only interface the grader uses.
 
-You can structure the module however you want, but the grader only relies on `decide`.
+There is one small replay detail to keep in mind. An assignment that is not legal at the time it is returned is not applied. The same goes for duplicate names in one response: if a technician or job appears more than once, only its first occurrence is honored.
 
-For development, use the three supplied scenarios:
+You have three scenarios to work with:
 
 `/app/data/sample_24/`
 `/app/data/sample_13/`
 `/app/data/sample_97/`
 
-These are examples for testing, not the final workload. Test on all three before submitting. The actual evaluation uses a separate shift with different data, so behavior that only works for one particular sample is unlikely to be useful.
+Run the policy against all three. They are only development cases, though. The grader uses a different shift, with its own technicians and jobs, so don't build something that depends on the particular contents of these samples.
 
-The evaluator imports your module and runs it with the real simulator. It then replays the assignments and calculates the resulting cost according to the simulator contract. A hidden quality threshold must be cleared. That threshold was established from measured baseline and reference performance on real scenarios; its value and the held-out scenario are not provided.
+The submitted module is imported and run through the real simulator on that hidden shift. The returned assignments are replayed and the resulting cost is checked against a hidden quality bar. The bar was set using measured baseline and reference results. Its exact value, and the grading scenario itself, are not available here.
 
-There is also a 120-second combined wall-clock limit for the simulation of the whole shift. Keep `decide` reasonably fast, especially if it performs work on every call.
+There is another practical constraint: the complete shift simulation has a combined wall-clock budget of 120 seconds. Keep the decision function cheap enough to run repeatedly. A clever policy that spends too much time making each decision will not help if the simulation cannot finish.
 
-Results need to be reproducible. Given the same state, `decide` should return the same list. Avoid unseeded randomness, wall-clock-dependent choices, or other changing external state.
+Keep `decide` deterministic. Given the same state, it should give back the same list. In particular, don't let wall-clock time, unseeded random choices, or changing outside state affect its result.
 
-Make sure the module imports successfully and that `decide` does not raise exceptions during a complete run. The simulator is part of the evaluation environment and should not be modified.
+Before you finish, make sure `policy.py` imports and survives a full run without throwing an exception. Leave the simulator itself alone.
 
 You have 10800 seconds to complete this task. Do not cheat by using online solutions or hints specific to this task.
