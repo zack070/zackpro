@@ -1,14 +1,14 @@
 {
   "held_out_scenario": "held_out",
-  "pass_bar_cost_cents": 1250000,
+  "pass_bar_cost_cents": 855000,
   "calibration": {
     "total_payment_cents": 25396903,
     "naive_no_match_cost_cents": 50783856,
     "best_of_six_greedy_probes_cost_cents": 5507792,
-    "full_budget_plain_hill_climb_60s_x2_calls": "fails on both cost and determinism -- its wall-clock-time-based iteration count varies between the two required match() calls",
-    "reference_cost_cents": 1150937,
-    "reference_design": "fixed iteration count (8000 per annealing run) x fixed restart count (15) per customer, NOT wall-clock-time-based -- confirmed byte-for-byte identical output across two consecutive match() calls with the same inputs, and confirmed to complete in ~7.6-7.8s on ordinary hardware",
-    "margin_added_cents": 99063,
-    "note": "Two prior calibrations of this task were each shown wrong by direct measurement and both are reflected here. First: per-customer instances were sized (20-30 payments, 15-22 invoices; 10 customers per scenario) so that exact/brute-force solving is impractical (a bitmask DP solver was measured taking 17s at 15 payments and not finishing in 120s at 18). Second: an earlier reference used a wall-clock time budget with an adaptively-calibrated cooling schedule; a real reviewer measured that this made the reference's OWN output non-deterministic (different costs across repeated runs on a loaded host, ranging 1.02M-1.17M) and unreliable on slower hardware (a ~4x-slower-equivalent budget sometimes failed to clear the previous bar) -- directly violating the instruction's own stated determinism requirement, which also had no test coverage. Both are fixed now: the reference uses a FIXED iteration count and restart count (no wall-clock dependency at all), confirmed deterministic by direct repeated testing, and the verifier now calls match() twice per grading run specifically to test the instruction's determinism requirement (test_deterministic_output in test_scoring.py), independently of the cost-bar test. The pass bar (1,250,000 cents, ~4.9% of total value) sits just above the fixed-iteration reference's measured cost (1,150,937 cents) and far below every adversarial probe's cost, including a plain hill-climb given a full, generous wall-clock budget (which now also fails the determinism test, since its iteration count is not fixed across the two required calls)."
+    "dp_seed_plain_hillclimb_probe_cost_cents": 928781,
+    "reference_cost_cents": 810433,
+    "reference_design": "bitset subset-sum DP construction (invoices smallest-first, exact reconstruction via the classic value-domain bitset trick) followed by simulated annealing with a FIXED iteration count (15000) and FIXED restart count (25) per customer -- not wall-clock-time-based. Confirmed byte-for-byte identical output across two consecutive match() calls with the same inputs, completing both calls in ~47s combined, well inside the 140s budget.",
+    "margin_added_cents": 44567,
+    "note": "A real reviewer found that a much simpler combination -- the same bitset subset-sum DP seed (a substantially better construction than best-fit-decreasing greedy), followed by a plain first-improvement hill climb with no annealing and no restarts (20k iterations) -- reached 3.53%-3.66% of total value on the held-out scenario (we reproduced their approach and measured 928,781 cents / 3.66%, close to their reported figure), which cleared the PREVIOUS bar (1,250,000 cents). This was a genuine, useful finding: the DP seed is a real improvement over best-fit-decreasing that our own reference had not been using. We adopted the DP seed into the reference itself and combined it with the existing annealing+restarts search, reaching 810,433 cents (3.19%) -- swept across 5 independently generated scenarios, the annealing-refined reference beats the DP-seed-plus-plain-hill-climb probe by 22.5%-37.5% relative cost on every one, with zero exceptions. The pass bar sits between the DP-seed-plus-hill-climb probe (928,781) and the full reference (810,433), close to the reference side."
   }
 }

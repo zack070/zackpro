@@ -18,22 +18,28 @@ secret to discover.
   (10800 must match `[agent].timeout_sec` in task.toml.)
 - Keep the whole file well under ~10,000 characters, and avoid restating
   `environment/engine/README.md`'s contract in full.
-- Do not state the exact pass bar (1,250,000 cents / $12,500.00), or any
-  of the calibration numbers measured on the held-out scenario (best
-  adversarial probe $55,077.92, reference $11,509.37) -- say that a
-  quality bar exists and was calibrated by direct measurement, without
-  giving the numbers. Also do not say anything characterizing how much
-  compute or what kind of algorithm is worth using -- working that out is
-  part of the task, and stating it would hand over the exact insight a
-  reviewer's own measurement caught this task missing before (an earlier
-  version implied "use more time" was the lever; it wasn't -- a plain
-  hill climb given a full time budget still fails, and the actual
-  reference uses a small, fixed amount of computation, not a large one).
+- Do not state the exact pass bar (855,000 cents / $8,550.00), or any of
+  the calibration numbers measured on the held-out scenario (best
+  plain-greedy adversarial probe $55,077.92, DP-seed-plus-hill-climb
+  probe $9,287.81, reference $8,104.33) -- say that a quality bar exists
+  and was calibrated by direct measurement, without giving the numbers.
+  Also do not say anything characterizing how much compute or what kind
+  of algorithm is worth using -- working that out is part of the task,
+  and stating it would hand over the exact insight two different
+  reviewers' own measurements caught this task missing before (one
+  earlier version implied "use more time" was the lever; it wasn't -- a
+  plain hill climb given a full time budget still fails. A later reviewer
+  found that a specific seeding construction -- assign invoices
+  smallest-first, then find the closest achievable payment combination --
+  beats naive greedy seeding by a wide margin; do not say anything that
+  would point toward processing invoices in a particular order or
+  "finding the closest achievable combination" as a sub-step).
 - Do not describe the reference solution's specific approach (simulated
-  annealing, or the bitmask-DP cross-check), AND do not name or hint at
-  the underlying problem class (do not say "combinatorial matching,"
-  "subset-sum," "partitioning," "NP-hard," or similar, and do not say
-  that sorting-and-greedy approaches leave money unmatched). A prior task
+  annealing, the bitset subset-sum seeding construction, or the
+  bitmask-DP cross-check), AND do not name or hint at the underlying
+  problem class (do not say "combinatorial matching," "subset-sum,"
+  "partitioning," "NP-hard," or similar, and do not say that
+  sorting-and-greedy approaches leave money unmatched). A prior task
   built this session (field-service-dispatch) failed its real difficulty
   probe (a live agent solved it 3 of 3 times at low effort) immediately
   after its instruction was written to include exactly this kind of "fair
