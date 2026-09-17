@@ -18,11 +18,17 @@ secret to discover.
   (10800 must match `[agent].timeout_sec` in task.toml.)
 - Keep the whole file well under ~10,000 characters, and avoid restating
   `environment/engine/README.md`'s contract in full.
-- Do not state the exact pass bar (2,030,000 cents / $20,300.00), or any
+- Do not state the exact pass bar (1,200,000 cents / $12,000.00), or any
   of the calibration numbers measured on the held-out scenario (best
-  adversarial probe $55,077.92, combined reference $12,006.90) -- say that
-  a quality bar exists and was calibrated by direct measurement, without
-  giving the numbers.
+  adversarial probe $55,077.92, full-budget plain hill-climb $16,181.85,
+  adaptive annealing reference $9,274.70) -- say that a quality bar exists
+  and was calibrated by direct measurement, without giving the numbers.
+  Also do not say anything about HOW MUCH of the 90-second time budget is
+  worth using, or that using more time helps -- that is itself part of
+  what a submission needs to work out (a plain hill climb given the full
+  budget does not clear the bar; a better algorithm using the same budget
+  does), and stating it directly would hand over the exact insight a
+  reviewer's own measurement caught this task missing before.
 - Do not describe the reference solution's specific approach (simulated
   annealing, or the bitmask-DP cross-check), AND do not name or hint at
   the underlying problem class (do not say "combinatorial matching,"
