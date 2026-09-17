@@ -29,7 +29,7 @@ write_reward() {
 
 # --- Stage 1: untrusted. Executes the candidate's policy code, isolated
 # as an unprivileged user, own process group, firm timeout. ---
-timeout -k 5 30 su -s /bin/bash runner -c "python3 /tests/collect_agent_output.py" > "$WORK_DIR/stage1.log" 2>&1
+timeout -k 5 120 su -s /bin/bash runner -c "python3 /tests/collect_agent_output.py" > "$WORK_DIR/stage1.log" 2>&1
 STAGE1_STATUS=$?
 cat "$WORK_DIR/stage1.log"
 

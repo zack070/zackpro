@@ -1,0 +1,7 @@
+tech_id,skills,shift_end,max_overtime
+T1,electrical;general;hvac,420,30
+T2,general,360,30
+T3,general,420,60
+T4,general,420,60
+T5,general,360,60
+T6,general,480,60

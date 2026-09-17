@@ -1,9 +1,11 @@
 {
   "held_out_scenario": "held_out",
-  "pass_bar_cost": 300.0,
+  "pass_bar_cost": 370.0,
   "calibration": {
-    "naive_baseline_cost": 895.0,
-    "reference_policy_cost": 200.0,
-    "margin_added": 100.0
+    "naive_fifo_baseline_cost": 1451.5,
+    "obvious_earliest_deadline_first_no_fatigue_awareness_cost": 747.0,
+    "reference_policy_cost": 318.5,
+    "margin_added": 51.5,
+    "note": "The obvious-EDF probe (sort by deadline, first eligible free tech, zero fatigue/urgency/scarcity awareness) was explicitly tested and fails this bar by a wide margin (747.0 vs 370.0), confirming the bar requires genuine fatigue/urgency/scarcity reasoning, not just deadline ordering."
   }
 }

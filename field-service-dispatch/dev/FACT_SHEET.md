@@ -20,8 +20,8 @@ secret to discover.
   `environment/sim/README.md`'s contract in full -- that document is
   agent-visible and authoritative; the instruction should describe the
   deliverable and grading, not re-derive every simulator rule.
-- Do not state the exact pass bar cost (300.0), the exact reference
-  policy's cost (200.0), or the exact naive baseline's cost (895.0) -- say
+- Do not state the exact pass bar cost (370.0), the exact reference
+  policy's cost (318.5), or the exact naive baseline's cost (1451.5) -- say
   that a quality bar exists and that it was calibrated against measured
   baseline and reference performance, without giving the numbers.
 - Do not name which of the two heuristics we tested performed better, or
@@ -40,7 +40,7 @@ secret to discover.
 - `sim/simulator.py` -- the actual executable implementation of that
   contract; the agent can read or import it directly (e.g. to write their
   own local test harness against the sample scenarios).
-- `data/sample_56/`, `data/sample_61/`, `data/sample_15/` -- three
+- `data/sample_24/`, `data/sample_13/`, `data/sample_97/` -- three
   complete sample scenarios (`technicians.csv`, `jobs.csv`, `config.json`),
   each with a different technician roster and job mix, for the agent to
   develop and test a policy against locally. These are NOT the scenario
@@ -84,6 +84,15 @@ secret to discover.
   same returned list. Non-deterministic policies (e.g. depending on
   wall-clock time, unseeded randomness, or external state) may replay
   inconsistently and are the agent's own risk.
+- Grading runs the whole held-out shift's simulation, calling `decide` at
+  every decision point (dozens of calls), under a combined wall-clock
+  budget of 120 seconds for the entire run. State this concrete number --
+  heavy per-call computation (deep lookahead, search, simulation-based
+  self-evaluation inside `decide`) counts against this same budget, and a
+  policy that runs out of time fails the same way a crashing one does. The
+  previous draft never disclosed that any time budget existed at all,
+  which was flagged as an undisclosed operational constraint and caused a
+  rejection -- this must be stated plainly this time.
 - A policy.py that fails to import, does not define `decide`, or raises
   during a call is treated as a failing submission, not a partial-credit
   case.
