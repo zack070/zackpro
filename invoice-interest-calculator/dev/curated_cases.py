@@ -134,4 +134,17 @@ def build():
              "principal_cents": 987654, "due_date": date(2021, 1, 1)}
     add("long_horizon_rounding_drift", inv11, [], r11, date(2023, 1, 1))
 
+    # 12. Fee threshold falls BEFORE the grace period ends
+    # (late_fee_threshold_days < grace_period_days) -- these two are
+    # independent per the rules, so the fee must still trigger even
+    # though no interest has started accruing yet. A day-by-day loop
+    # that starts iterating at accrual_start (skipping earlier days
+    # entirely) would silently miss this trigger -- caught this exact
+    # bug in the reference implementation itself via this case.
+    r12 = _rules("EDGE12", grace_period_days=15, late_fee_threshold_days=10,
+                 late_fee_type="flat_cents", late_fee_value=5000)
+    inv12 = {"invoice_id": "E12", "customer_id": "C12", "jurisdiction_code": "EDGE12",
+             "principal_cents": 1000000, "due_date": date(2023, 1, 1)}
+    add("fee_triggers_before_grace_period_ends", inv12, [], r12, date(2023, 2, 1))
+
     return cases, jurisdictions

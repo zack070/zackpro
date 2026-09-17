@@ -92,7 +92,15 @@ def compute_balance(invoice, payments, jurisdiction_rules, as_of_date) -> int:
     for p in payments_sorted:
         payments_by_date.setdefault(p["payment_date"], []).append(p)
 
-    day = accrual_start
+    # The loop must start at the EARLIEST of accrual_start, the fee
+    # trigger day, or any payment date -- not just accrual_start.
+    # late_fee_threshold_days and grace_period_days are independent
+    # (see README), so the fee can trigger, or a payment can be applied,
+    # before interest even starts accruing. Interest accrual itself
+    # stays correctly guarded by "if day >= accrual_start" below; only
+    # the loop's own starting point was wrong, silently skipping a fee
+    # trigger (and any payment) that fell before accrual_start.
+    day = min([accrual_start, fee_trigger_day] + list(payments_by_date.keys()))
     while day <= as_of_date:
         if day >= accrual_start:
             rate = _rate_for_day(rules["interest_rate_schedule"], day)

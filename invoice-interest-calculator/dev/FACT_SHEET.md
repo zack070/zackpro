@@ -21,12 +21,12 @@ scenarios/rule-interactions the held-out test emphasizes.
   (10800 must match `[agent].timeout_sec` in task.toml.)
 - Keep the whole file well under ~10,000 characters, and avoid restating
   `environment/engine/README.md`'s rules in full.
-- Do not state the exact pass bar (81/85 queries, 95.3%), the exact
+- Do not state the exact pass bar (262/266 queries, 98.5%), the exact
   tolerance value's role as a "how close is close enough" lever (state
   the tolerance value itself is fine, since it's disclosed in
   README.md, but don't say "getting most rules right is probably
   enough" or similar), or any of the specific adversarial-probe
-  percentages measured (worst 35.3%, best 82.4%). Say that a quality
+  percentages measured (worst 22.6%, best 96.2%). Say that a quality
   bar exists and was calibrated by direct measurement against many
   held-out test cases, without giving numbers.
 - Do NOT hint at which specific rule interactions the grading data

@@ -1,20 +1,20 @@
 {
   "held_out_scenario": "held_out",
-  "total_queries": 85,
-  "pass_bar_correct_queries": 81,
+  "total_queries": 266,
+  "pass_bar_correct_queries": 262,
   "tolerance_cents": 5,
   "calibration": {
-    "reference_correct_queries": 85,
+    "reference_correct_queries": 266,
     "reference_correct_pct": 100.0,
     "adversarial_probes": {
-      "ignores_rate_changes": {"correct": 70, "pct": 82.4, "note": "uses only the first rate in the schedule for the whole accrual period"},
-      "ignores_grace_period": {"correct": 38, "pct": 44.7, "note": "accrues interest starting the day after due_date, ignoring grace_period_days"},
-      "always_actual_365": {"correct": 56, "pct": 65.9, "note": "always divides by 365 regardless of the jurisdiction's day_count_convention"},
-      "never_compounds": {"correct": 54, "pct": 63.5, "note": "treats compounding as always simple, never capitalizes accrued interest"},
-      "fee_threshold_off_by_one": {"correct": 56, "pct": 65.9, "note": "triggers the late fee on due_date + threshold_days instead of + threshold_days + 1"},
-      "allocation_principal_first": {"correct": 30, "pct": 35.3, "note": "pays down principal before fees/interest regardless of the specified payment_allocation_order"},
-      "rounds_daily": {"correct": 85, "pct": 100.0, "note": "rounds each day's accrual to the cent instead of only the final total -- within the 5-cent tolerance, not a real bug worth penalizing"}
+      "ignores_rate_changes": {"correct": 223, "pct": 83.8, "note": "uses only the first rate in the schedule for the whole accrual period"},
+      "ignores_grace_period": {"correct": 60, "pct": 22.6, "note": "accrues interest starting the day after due_date, ignoring grace_period_days"},
+      "always_actual_365": {"correct": 165, "pct": 62.0, "note": "always divides by 365 regardless of the jurisdiction's day_count_convention"},
+      "never_compounds": {"correct": 69, "pct": 25.9, "note": "treats compounding as always simple, never capitalizes accrued interest"},
+      "fee_threshold_off_by_one": {"correct": 256, "pct": 96.2, "note": "triggers the late fee on due_date + threshold_days instead of + threshold_days + 1 -- a 1-day shift that rarely changes the outcome unless a payment or other event falls exactly between the two candidate trigger days, so this is the weakest probe measured; the pass bar is set specifically to still exclude it"},
+      "allocation_principal_first": {"correct": 142, "pct": 53.4, "note": "pays down principal before fees/interest regardless of the specified payment_allocation_order"},
+      "rounds_daily": {"correct": 266, "pct": 100.0, "note": "rounds each day's accrual to the cent instead of only the final total -- within the 5-cent tolerance (max observed drift 2 cents even over a 2-year accrual horizon), not a real bug worth penalizing"}
     },
-    "note": "Each probe is a 'plausible but subtly wrong' implementation that gets exactly ONE rule interaction wrong while implementing everything else correctly -- not a strawman. The held-out scenario (85 queries: 14 hand-curated edge cases targeting specific rule interactions -- grace-period boundary, mid-window rate change, late-fee threshold boundary, fee-cap engagement, monthly compounding across February in both a leap and non-leap year, payment-allocation-order sensitivity, actual_365 vs actual_360, and a long-horizon rounding-drift check -- plus 70 independently generated random cases) was built specifically so that missing any one rule interaction fails a large, robust fraction of queries: worst adversarial probe reaches 82.4% correct, the reference reaches 100%, and the bar (81/85 = 95.3%) sits between them with a wide, non-noisy margin. Unlike two earlier task designs this session (a subset-sum-style partition problem and a bipartite matching problem), this is a correctness task, not an optimization-quality task -- there is no heuristic that can partially satisfy multiple rules at once and land in between; each bug is caught deterministically by specific queries that exercise it."
+    "note": "Each probe is a 'plausible but subtly wrong' implementation that gets exactly ONE rule interaction wrong while implementing everything else correctly -- not a strawman. The held-out scenario (266 queries: 15 hand-curated edge cases targeting specific rule interactions -- grace-period boundary, mid-window rate change, late-fee threshold boundary, fee-cap engagement, monthly compounding across February in both a leap and non-leap year, payment-allocation-order sensitivity, actual_365 vs actual_360, a long-horizon rounding-drift check, and a fee-triggers-before-grace-period-ends case -- plus 250 independently generated random cases) was scaled up from an initial 85-query version specifically to stabilize the weakest probe's measured percentage (it moved from 65.9% at 85 queries to a stable ~96% at 266, so the smaller sample was not a reliable read). The pass bar (262/266 = 98.5%) sits strictly between the weakest probe (256/266 = 96.2%) and the reference/tolerable-rounding-variant (266/266 = 100%) -- a narrower margin than the other probes show, but real: it survived a 3x scale-up of the held-out set without closing, unlike a probe whose apparent gap is just sampling noise. Unlike two earlier task designs this session (a subset-sum-style partition problem and a bipartite matching problem), this is a correctness task, not an optimization-quality task -- there is no heuristic that can partially satisfy multiple rules at once and land in between; each bug is caught deterministically by specific queries that exercise it. A genuine implementation bug was also caught and fixed during this calibration: the reference's own day-by-day loop started at accrual_start rather than at the earliest of accrual_start/fee_trigger_day/any payment date, silently skipping a late fee (or an early payment) that fell before interest started accruing -- fixed in reference_calc.py, solution/policy.py, and dev/plausible_wrong.py's shared base identically, and the fix's real-world impact (via payments landing before accrual_start with a 0-day grace period, not just the narrower threshold<grace scenario first suspected) is part of why the calibration numbers above differ from an earlier, smaller measurement."
   }
 }

@@ -3,21 +3,26 @@
 # including a crash or timeout in stage 1, must still reach the point
 # where reward.txt gets written.
 #
-# Which exact path the platform checks for the reward file has not been
-# possible to confirm directly (no Docker registry access in this dev
-# environment to build and run the real image; two different guesses --
-# /logs/verifier/reward.txt, then /work/reward.txt -- both produced an
-# identical RewardFileNotFoundError naming ".../verifier/reward.txt"
-# under the job's mapped work directory). Rather than guess a third
-# single path, write the reward (as both reward.txt and reward.json,
-# since the platform's own error accepts either) to every plausible
-# candidate location at once. This is cheap (a few bytes) and makes the
-# verifier robust to whichever convention is actually in effect.
-WORK_DIR=/work
-CTRF_FILE="$WORK_DIR/ctrf.json"
-REWARD_CANDIDATE_DIRS="/work /work/verifier /logs/verifier"
+# Per platform documentation: write a single numeric binary score
+# (exactly 0 or 1) as plain text to /logs/verifier/reward.txt. A prior
+# version of this script guessed at other paths (/work/reward.txt,
+# /work/verifier/reward.txt) after misreading a RewardFileNotFoundError,
+# and also wrote a bare "0"/"1" to reward.json at each candidate
+# location as a hedge -- reward.json is parsed as a structured
+# VerifierResult object expecting a "rewards" DICTIONARY, so a bare int
+# there fails Pydantic validation outright (a worse failure than the
+# one being chased). /logs/verifier/reward.txt was correct from the
+# start; reward.json should not be written at all unless its required
+# dict shape is known.
 
-mkdir -p "$WORK_DIR"
+REWARD_DIR=/logs/verifier
+REWARD_FILE="$REWARD_DIR/reward.txt"
+WORK_DIR=/work
+CTRF_FILE="$REWARD_DIR/ctrf.json"
+
+mkdir -p "$REWARD_DIR" "$WORK_DIR"
+chown root:root "$REWARD_DIR"
+chmod 700 "$REWARD_DIR"
 
 # Seal the hidden pass-bar/calibration data before stage 1 (untrusted)
 # ever runs. The held-out INPUT scenario (sealed/inputs) is left
@@ -29,28 +34,13 @@ chmod 700 /tests/sealed/reference
 find /tests/sealed/reference -type f -exec chmod 600 {} \;
 find /tests/sealed/reference -type d -exec chmod 700 {} \;
 
-# /work must be writable by the untrusted runner user (stage 1 writes
-# output.json there), but the STICKY bit prevents that same user from
-# deleting or replacing reward.txt once stage 2 (root) writes it --
-# without it, owning write+execute on the parent directory would let
-# runner (or a leftover forked process under that UID) remove/replace a
-# root-owned file inside it, permission bits on the file notwithstanding.
-chown root:runner "$WORK_DIR"
-chmod 1770 "$WORK_DIR"
+chown runner:runner "$WORK_DIR"
+chmod 700 "$WORK_DIR"
 
 write_reward() {
-  for dir in $REWARD_CANDIDATE_DIRS; do
-    mkdir -p "$dir" 2>/dev/null || continue
-    # Give the untrusted runner user write access to create files under
-    # a candidate dir (needed for /work, harmless elsewhere), but keep
-    # the sticky bit so it can't delete/replace what root writes here.
-    chown root:runner "$dir" 2>/dev/null
-    chmod 1770 "$dir" 2>/dev/null
-    echo -n "$1" > "$dir/reward.txt" 2>/dev/null
-    echo -n "$1" > "$dir/reward.json" 2>/dev/null
-    chown root:root "$dir/reward.txt" "$dir/reward.json" 2>/dev/null
-    chmod 644 "$dir/reward.txt" "$dir/reward.json" 2>/dev/null
-  done
+  echo -n "$1" > "$REWARD_FILE"
+  chown root:root "$REWARD_FILE"
+  chmod 600 "$REWARD_FILE"
 }
 
 # --- Stage 1: untrusted. Executes the candidate's policy code, isolated

@@ -38,7 +38,12 @@ def _compute_one(invoice, payments_for_invoice, rules, as_of_date):
     for p in sorted(payments_for_invoice, key=lambda p: (p["payment_date"], p["payment_id"])):
         payments_by_date.setdefault(p["payment_date"], []).append(p)
 
-    day = accrual_start
+    # Start at the EARLIEST of accrual_start, the fee trigger day, or any
+    # payment date -- late_fee_threshold_days and grace_period_days are
+    # independent, so a fee (or payment) can occur before interest even
+    # starts accruing. Interest accrual stays correctly guarded by
+    # "if day >= accrual_start" below.
+    day = min([accrual_start, fee_trigger_day] + list(payments_by_date.keys()))
     while day <= as_of_date:
         if day >= accrual_start:
             rate = _rate_for_day(rules["interest_rate_schedule"], day)

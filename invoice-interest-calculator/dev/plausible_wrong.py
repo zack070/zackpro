@@ -55,7 +55,11 @@ def _base_calc(invoice, payments, jurisdiction_rules, as_of_date, *,
     for p in payments_sorted:
         payments_by_date.setdefault(p["payment_date"], []).append(p)
 
-    day = accrual_start
+    # Same fix as reference_calc.py: start at the earliest of
+    # accrual_start, fee_trigger_day, or any payment date, so each probe
+    # still isolates exactly its one intended deviation rather than also
+    # inheriting a shared "loop starts too late" bug.
+    day = min([accrual_start, fee_trigger_day] + list(payments_by_date.keys()))
     while day <= as_of_date:
         if day >= accrual_start:
             if ignore_rate_changes:

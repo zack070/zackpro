@@ -1,19 +1,14 @@
 #!/usr/bin/env bash
 # Local (no-Docker) verifier harness, run against the real /app, /tests,
-# /work paths -- same layout the Dockerfile's ENTRYPOINT expects.
+# /work, /logs paths -- same layout the Dockerfile's ENTRYPOINT expects.
 # pytest + pytest-json-ctrf are installed directly into the system
 # interpreter in this dev environment (no separate venv needed here).
 #
-# Which exact path the platform checks for reward.txt could not be
-# confirmed directly in this dev environment (no working Docker
-# registry access to build and run the real image). Two different
-# single-path guesses both produced an identical RewardFileNotFoundError
-# from the platform, which is why test.sh now writes the reward to
-# every plausible candidate location at once
-# (/work, /work/verifier, /logs/verifier -- both .txt and .json). This
-# harness checks all of them below rather than assuming one.
-# test.sh itself is the source of truth for the reward paths; this
-# harness only reads them back to report the result.
+# reward.txt lives at /logs/verifier/reward.txt, per platform
+# documentation (a plain "0" or "1", not JSON) -- confirmed after two
+# rounds of guessing at other paths, one of which also added a
+# reward.json containing a bare int, which the platform parses as a
+# structured object expecting a dict and rejects outright.
 #
 # Usage: dev/local_harness.sh <policy.py to submit as /app/outputs/policy.py>
 set -uo pipefail
@@ -21,8 +16,8 @@ set -uo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 POLICY_FILE="$1"
 
-rm -rf /app /tests /work
-mkdir -p /app/outputs /work
+rm -rf /app /tests /work /logs
+mkdir -p /app/outputs /work /logs/verifier
 
 cp -r "$ROOT/tests/." /tests
 if [ -f "$POLICY_FILE" ]; then
@@ -30,16 +25,12 @@ if [ -f "$POLICY_FILE" ]; then
 fi
 
 id runner >/dev/null 2>&1 || useradd -m -u 1001 -s /bin/bash runner
+chown runner:runner /work
 
 echo "=== running tests/test.sh against $POLICY_FILE ==="
 bash /tests/test.sh
-echo "=== reward (all candidate locations) ==="
-for f in /work/reward.txt /work/reward.json /work/verifier/reward.txt /work/verifier/reward.json /logs/verifier/reward.txt /logs/verifier/reward.json; do
-  if [ -f "$f" ]; then
-    echo "$f: $(cat "$f")"
-  else
-    echo "$f: MISSING"
-  fi
-done
+echo "=== reward.txt ==="
+cat /logs/verifier/reward.txt
+echo
 echo "=== orphaned runner processes ==="
 ps -u runner || echo "(none)"

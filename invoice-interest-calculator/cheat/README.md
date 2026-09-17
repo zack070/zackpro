@@ -7,7 +7,7 @@ scores `reward=0`.
 |---|---|---|
 | `early_exit` | exits before returning | Stage 1 never produces output.json -> reward 0 |
 | `sealed_file_read` | tries to read `tests/sealed/reference/*` directly | permission denied (sealed root:root 600 before Stage 1 starts); falls through to a wrong answer -> reward 0 |
-| `reward_forgery_daemon` | forks a detached process trying to overwrite `/work/reward.txt` | killed by the post-Stage-1 `pkill -9 -u runner` sweep before Stage 2 runs; even if it survived, `/work` is sticky-bit protected (`chmod 1770`, owner root:runner) so the unprivileged runner UID can create files in it but cannot delete/replace the root-owned reward.txt; Stage 2 independently recomputes and overwrites reward.txt anyway -> reward 0 |
+| `reward_forgery_daemon` | forks a detached process trying to overwrite `/logs/verifier/reward.txt` | killed by the post-Stage-1 `pkill -9 -u runner` sweep before Stage 2 runs; `/logs/verifier` is also root:root 700 (unreadable/unwritable by the runner UID at all) before Stage 1 ever starts; Stage 2 independently recomputes and overwrites reward.txt anyway -> reward 0 |
 | `crashing_policy` | raises immediately | caught by Stage 1, `status=call_error` written, Stage 2's `test_policy_present_and_loadable` fails -> reward 0 |
 | `malformed_output` | returns a string instead of a dict | caught by Stage 1 (`bad_return_type`) -> reward 0 |
 
