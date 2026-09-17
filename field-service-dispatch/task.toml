@@ -1,0 +1,40 @@
+artifacts = ["/app/outputs"]
+
+[task]
+name = "afterquery/field-service-dispatch"
+
+[metadata]
+author_name = "Tonny Muthoka"
+author_email = "tonnysammy952@gmail.com"
+
+difficulty_explanation = """
+This work is performed by field-service and workforce-dispatch planners at operations that send technicians to skill-matched jobs against SLA deadlines -- HVAC/electrical/plumbing service companies, telecom and utility field service, and similar dispatch-heavy operations. The agent must produce a dispatch policy (code, not a single plan) that generalizes to a shift it never saw during development, under three interacting mechanisms with no known efficient exact solver: technician fatigue that inflates job duration once a technician has worked 180 continuous minutes without a break, SLA-breach cascades where a missed urgent job spawns a follow-up job that consumes further capacity, and a hard overtime cap that removes a technician from consideration entirely rather than merely penalizing lateness. Because jobs arrive dynamically mid-shift and the fatigue/cascade dynamics are path-dependent (the cost of an assignment depends on the technician's entire prior history that shift, and on which other jobs later breach as a downstream consequence), there is no static formulation an agent can solve once and be done with the way a linear or integer program admits a provably optimal answer: two independently-designed heuristics we tested (a scarcity-and-deadline-aware assignor and a pure earliest-deadline-first assignor) diverge substantially in quality across scenarios, and both required actually running the simulator repeatedly against sample data to discover that divergence -- reading the fully-disclosed mechanics is not sufficient to predict which approach wins on a given shift without simulating it. All scenario data (technicians, skills, jobs, arrival times) is synthetically generated for this task and does not represent any real company's operations.
+"""
+
+solution_explanation = """
+The reference solution is a single dispatch heuristic: at every decision point, pending jobs are sorted by deadline (earliest first), and each is assigned to the least-fatigued eligible free technician. This simple rule was selected over a more elaborate scarcity-aware heuristic we also built and tested, because empirically it achieved a lower (better) cost across every sample and held-out scenario measured -- a concrete demonstration that this task rewards genuine empirical validation over a plausible-sounding but untested design. The pass bar for the held-out grading scenario was set at this reference policy's measured cost plus a fixed additive margin, calibrated after directly measuring both a naive FIFO-greedy baseline (895.0 on the held-out scenario) and the reference policy (200.0), confirming real, substantial headroom between a naive approach and a considered one before finalizing the bar at 300.0.
+"""
+
+verification_explanation = """
+The verifier never executes the candidate's code in the trusted stage and never trusts anything the untrusted stage computes. Stage 1 (unprivileged, timeout-bounded, UID-swept after running) imports the candidate's submitted policy module and runs it, via the real simulator, against the sealed held-out scenario -- but the only thing it hands off to Stage 2 is the raw sequence of (technician_id, job_id) pairs the policy's decide() function returned at each call (the "decision trace"), not a computed score. Stage 2 (trusted, root, executes no candidate code at all) mechanically replays that exact sequence through the same deterministic event loop used to build the sealed scenario, independently re-validating every claimed assignment from scratch (technician actually free, job actually pending, skill match, finish time within the technician's overtime cap) and recomputing total cost from first principles. A fabricated or inconsistent trace can only replay to an equal or worse score than a faithful one, never better, since replay strictly re-derives validity rather than trusting the trace's implied legality. The pass bar (300.0) is compared against this independently replayed cost.
+"""
+
+category = "Operations"
+subcategory = "Logistics"
+tags = ["dispatch", "scheduling", "simulation", "workforce-management", "logistics", "discrete-event"]
+expert_time_estimate_hours = 5
+relevant_experience = "TODO: describe your own professional experience relevant to field-service dispatch, workforce scheduling, or operations that qualifies you to judge this task's realism and difficulty."
+
+[verifier]
+timeout_sec = 180.0
+environment_mode = "separate"
+
+[agent]
+timeout_sec = 10800.0
+
+[environment]
+build_timeout_sec = 600.0
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0

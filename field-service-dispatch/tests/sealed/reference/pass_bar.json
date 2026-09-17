@@ -1,0 +1,9 @@
+{
+  "held_out_scenario": "held_out",
+  "pass_bar_cost": 300.0,
+  "calibration": {
+    "naive_baseline_cost": 895.0,
+    "reference_policy_cost": 200.0,
+    "margin_added": 100.0
+  }
+}
