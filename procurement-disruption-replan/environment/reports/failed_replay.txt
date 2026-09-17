@@ -1,0 +1,48 @@
+Independent replay of reports/current_plan.csv against the operational
+contract (periods 1-8, no disruption applied -- this plan predates any
+disruption event).
+
+RESULT: FAILED
+
+Period 2:
+  P4 short by 30.0 units
+  P6 short by 60.0 units
+
+Period 3:
+  P1 short by 80.0 units
+  P2 short by 70.0 units
+  P3 short by 90.0 units
+  P4 short by 20.0 units
+  P5 short by 90.0 units
+
+Period 4:
+  P1 short by 110.0 units
+  P2 short by 20.0 units
+  P3 short by 130.0 units
+  P4 short by 20.0 units
+  P5 short by 100.0 units
+
+Period 5:
+  P3 short by 30.0 units
+  P5 short by 5.0 units
+  P6 short by 10.0 units
+
+Period 7:
+  P1 short by 10.0 units
+
+Period 8:
+  P1 short by 10.0 units
+  P3 short by 10.0 units
+  P5 short by 5.0 units
+
+Horizon totals:
+  service requirement not met for P1: 0.750000 < 1.0
+  service requirement not met for P2: 0.869565 < 1.0
+  service requirement not met for P3: 0.740000 < 1.0
+  service requirement not met for P4: 0.867925 < 1.0
+  service requirement not met for P5: 0.740260 < 1.0
+  service requirement not met for P6: 0.879310 < 1.0
+
+This plan was accepted as feasible by planner.py's own internal check.
+Independent replay against the operational contract in the environment
+README disagrees. Investigate before relying on this tool's output.

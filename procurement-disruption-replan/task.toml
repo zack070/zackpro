@@ -1,0 +1,40 @@
+artifacts = ["/app/outputs"]
+
+[task]
+name = "afterquery/procurement-disruption-replan"
+
+[metadata]
+author_name = "TODO: your name"
+author_email = "ogetozack@gmail.com"
+
+difficulty_explanation = """
+This task requires an agent to (1) infer, from an operational contract written in prose plus a runnable-but-wrong incumbent planner and its independent replay-failure report, the correct joint semantics governing inventory timing, purchase-order state (committed vs. received vs. paid), supplier capacity, minimum order quantities, and cash timing across an 8-period horizon; (2) formulate and solve a coupled multi-period procurement optimization under those semantics to the true minimum cost; and (3) commit to that plan, then react to a supply disruption whose specific supplier and timing are revealed only by actually running a provided tool against the agent's own submitted baseline -- so the exact state the agent must replan from depends on which of possibly several cost-optimal baselines it chose, and cannot be derived from the static input files alone. This forces genuine iterative interaction rather than a single read-then-solve pass: the agent cannot know its Stage 2 starting point without having first committed to and executed a Stage 1 decision. The bespoke difficulty is the cross-cutting reconciliation of six distinct order/cash states (ordered, received, available, invoiced, paid, cash-committed) under three independently-varying clocks (lead time, payment term, and the disruption window), not the mechanics of writing a multi-period linear/integer program once that model is correctly derived, which is comparatively routine once the semantics are right. All input data (demand, capacities, prices, existing commitments) is synthetically generated for this task and does not represent any real company's data. Several plausible alternate readings of the contract (crediting on-hand inventory at order time rather than arrival time; applying payment at physical arrival rather than at order-period-plus-term; ignoring existing commitments when checking supplier capacity) were checked directly and produce real, measurable replay failures rather than passing by coincidence.
+"""
+
+solution_explanation = """
+The reference solution treats the operational contract as the specification for two sequential mixed-integer linear programs. Stage 1 minimizes total purchase-plus-holding cost over periods 1-8 given only the initial state, existing commitments, and full-horizon demand/capacity data, with no knowledge of the disruption (a real planner in this position would not yet know about it either). Only periods 1-4 of that plan are treated as actually placed; the resulting real end-of-period-4 state (on-hand inventory, cash, and any orders still in transit) is computed by replaying those decisions through the same authoritative semantics used for grading. Stage 2 then minimizes cost over periods 5-8 from that real state, with the disrupted supplier's capacity for new orders set to zero in the affected periods and its existing binding commitments left untouched. Both stages are solved with a standard open-source MILP solver and their outputs are independently re-validated by a separate deterministic replay/accounting engine before being accepted.
+"""
+
+verification_explanation = """
+The verifier never executes or trusts anything the candidate submits beyond two CSV files. An unprivileged stage parses them into a normalized form with no judgment; a separate trusted stage, running as root against sealed data the candidate never sees, reconstructs all state from scratch, replays both the baseline (periods 1-8, disruption-free) and the replan (periods 5-8, anchored to the state produced by replaying the candidate's OWN periods-1-4 decisions, with the disruption applied) under the authoritative semantics, and independently recomputes cost. The baseline is compared against a cost figure precomputed once at build time, since its optimum does not depend on the candidate. Because the state the candidate's replan must be evaluated from depends on which cost-optimal baseline the candidate reached, the Stage 2 optimum is not a fixed precomputed number: the verifier re-solves the same MILP formulation live, conditioned on the candidate's own actual end-of-period-4 state, and grades against that. A plan passes only if both stages are feasible under the authoritative semantics and within a small absolute tolerance of their respective true minimum cost.
+"""
+
+category = "Operations"
+subcategory = "Supply Chain"
+tags = ["procurement", "supply-chain", "optimization", "mixed-integer-programming", "debugging", "disruption-recovery"]
+expert_time_estimate_hours = 6
+relevant_experience = "TODO: describe your own professional experience with procurement/supply-chain planning, inventory/cash accounting, or operations-research optimization that qualifies you to judge this task's realism and difficulty."
+
+[verifier]
+timeout_sec = 300.0
+environment_mode = "separate"
+
+[agent]
+timeout_sec = 14400.0
+
+[environment]
+build_timeout_sec = 600.0
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0
