@@ -20,13 +20,17 @@ secret to discover.
   `environment/sim/README.md`'s contract in full -- that document is
   agent-visible and authoritative; the instruction should describe the
   deliverable and grading, not re-derive every simulator rule.
-- Do not state the exact pass bar cost (370.0), the exact reference
-  policy's cost (318.5), or the exact naive baseline's cost (1451.5) -- say
-  that a quality bar exists and that it was calibrated against measured
-  baseline and reference performance, without giving the numbers.
-- Do not name which of the two heuristics we tested performed better, or
-  describe their logic -- that would hand the agent a specific design to
-  copy rather than requiring their own empirical validation.
+- Do not state the exact pass bar cost (1200.0), or any of the calibration
+  costs measured on the held-out scenario (naive 2545.0, best greedy
+  1702.0, exact-matching-without-scarcity 1335.0, reference 1090.0) -- say
+  that a quality bar exists and that it was calibrated by direct
+  measurement, without giving the numbers.
+- Do not describe the reference solution's specific approach (that it
+  brute-force searches assignments jointly, or the specific cost terms it
+  weighs) -- it is fine, and probably useful, to say that assigning jobs
+  one at a time in a fixed priority order is a greedy approach to what is
+  really an assignment/matching problem, since that framing is a fair hint
+  about the nature of the problem, not a specific design to copy.
 
 ## What the agent is given (all under /app)
 
@@ -40,11 +44,16 @@ secret to discover.
 - `sim/simulator.py` -- the actual executable implementation of that
   contract; the agent can read or import it directly (e.g. to write their
   own local test harness against the sample scenarios).
-- `data/sample_24/`, `data/sample_13/`, `data/sample_97/` -- three
+- `data/sample_45/`, `data/sample_87/`, `data/sample_150/` -- three
   complete sample scenarios (`technicians.csv`, `jobs.csv`, `config.json`),
   each with a different technician roster and job mix, for the agent to
   develop and test a policy against locally. These are NOT the scenario
-  used for grading.
+  used for grading. Worth mentioning: sample scenarios (and the held-out
+  grading scenario) routinely have several jobs and several free
+  technicians pending at the very same decision point, with overlapping
+  (not one-to-one) skill eligibility -- this is a normal, expected shape
+  of the data, not an edge case.
+
 ## Required output
 
 - `/app/outputs/policy.py` -- a Python module defining exactly one
@@ -58,7 +67,9 @@ secret to discover.
   becomes free or any job arrives, but only when at least one technician
   is free and at least one job is pending. It returns a list of
   `(technician_id, job_id)` pairs to assign immediately; `[]` means assign
-  nothing right now.
+  nothing right now. A single call to `decide` may (and often should)
+  return multiple pairs at once, since multiple technicians and jobs are
+  frequently available simultaneously.
 - The module must contain no other required interface; the agent may
   define helper functions/classes/state inside it freely, but grading only
   ever calls `decide`.
@@ -69,17 +80,22 @@ secret to discover.
   against a single held-out shift scenario the agent never sees the data
   for -- different technicians, different jobs, from any sample scenario
   provided. This is why testing only against the given samples is not
-  suficient by itself; the policy needs to generalize.
+  sufficient by itself; the policy needs to generalize.
 - Only the sequence of assignments `decide()` actually returns is used for
   scoring; grading independently replays and re-validates that sequence
   under the same rules (an assignment that wasn't actually legal at that
   moment -- e.g. naming a technician who wasn't free, or a skill mismatch
   -- is simply not applied, not an error).
 - There is a hidden pass/fail cost bar for the held-out scenario. It was
-  calibrated by directly measuring a naive baseline policy and a
-  considered reference policy's real performance on real scenarios and
-  confirming a substantial, genuine gap between them -- state plainly that
-  such a bar exists and must be cleared, without stating its value.
+  calibrated by directly measuring several different approaches' real
+  performance on the held-out scenario -- multiple fixed-priority greedy
+  strategies (every reasonable combination of job-ordering and
+  tie-break rule we could think to try), and approaches that instead treat
+  each decision point as a joint assignment problem to solve -- and
+  confirming a substantial, genuine gap between the best greedy approach
+  and a policy that reasons jointly about the batch. State plainly that
+  such a bar exists and must be cleared, without stating its value or
+  describing the reference approach's specific logic.
 - `decide` must be deterministic: the same `state` must always produce the
   same returned list. Non-deterministic policies (e.g. depending on
   wall-clock time, unseeded randomness, or external state) may replay
@@ -89,10 +105,7 @@ secret to discover.
   budget of 120 seconds for the entire run. State this concrete number --
   heavy per-call computation (deep lookahead, search, simulation-based
   self-evaluation inside `decide`) counts against this same budget, and a
-  policy that runs out of time fails the same way a crashing one does. The
-  previous draft never disclosed that any time budget existed at all,
-  which was flagged as an undisclosed operational constraint and caused a
-  rejection -- this must be stated plainly this time.
+  policy that runs out of time fails the same way a crashing one does.
 - A policy.py that fails to import, does not define `decide`, or raises
   during a call is treated as a failing submission, not a partial-credit
   case.
@@ -105,4 +118,9 @@ a policy before submitting. There is no tool invocation required beyond
 writing ordinary Python and running it -- unlike a task with a hidden fact
 to discover via a specific command, this task's realism comes from
 needing to actually test a design against simulated outcomes, which the
-agent can do with the given `simulator.py` and sample data directly.
+agent can do with the given `simulator.py` and sample data directly. Since
+several jobs and technicians are often available at once, it is worth
+mentioning that deciding all of them one at a time in a fixed order is one
+valid strategy but not the only one worth considering -- how to reason
+about a whole batch of simultaneous choices together is part of what the
+agent needs to work out and test.
