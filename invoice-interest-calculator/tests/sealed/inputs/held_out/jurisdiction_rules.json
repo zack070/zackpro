@@ -1,0 +1,374 @@
+{
+  "EDGE1": {
+    "day_count_convention": "actual_365",
+    "grace_period_days": 5,
+    "compounding": "simple",
+    "late_fee_type": "flat_cents",
+    "late_fee_value": 5000,
+    "late_fee_cap_cents": null,
+    "late_fee_threshold_days": 30,
+    "interest_rate_schedule": [
+      {
+        "effective_date": "2023-01-01",
+        "annual_rate": 0.1
+      }
+    ],
+    "payment_allocation_order": [
+      "fees",
+      "interest",
+      "principal"
+    ]
+  },
+  "EDGE2": {
+    "day_count_convention": "actual_365",
+    "grace_period_days": 0,
+    "compounding": "simple",
+    "late_fee_type": "flat_cents",
+    "late_fee_value": 5000,
+    "late_fee_cap_cents": null,
+    "late_fee_threshold_days": 30,
+    "interest_rate_schedule": [
+      {
+        "effective_date": "2023-01-01",
+        "annual_rate": 0.06
+      },
+      {
+        "effective_date": "2023-04-01",
+        "annual_rate": 0.18
+      }
+    ],
+    "payment_allocation_order": [
+      "fees",
+      "interest",
+      "principal"
+    ]
+  },
+  "EDGE3": {
+    "day_count_convention": "actual_365",
+    "grace_period_days": 5,
+    "compounding": "simple",
+    "late_fee_type": "flat_cents",
+    "late_fee_value": 7500,
+    "late_fee_cap_cents": null,
+    "late_fee_threshold_days": 30,
+    "interest_rate_schedule": [
+      {
+        "effective_date": "2023-01-01",
+        "annual_rate": 0.1
+      }
+    ],
+    "payment_allocation_order": [
+      "fees",
+      "interest",
+      "principal"
+    ]
+  },
+  "EDGE4": {
+    "day_count_convention": "actual_365",
+    "grace_period_days": 5,
+    "compounding": "simple",
+    "late_fee_type": "percent_of_principal",
+    "late_fee_value": 1000,
+    "late_fee_cap_cents": 40000,
+    "late_fee_threshold_days": 30,
+    "interest_rate_schedule": [
+      {
+        "effective_date": "2023-01-01",
+        "annual_rate": 0.1
+      }
+    ],
+    "payment_allocation_order": [
+      "fees",
+      "interest",
+      "principal"
+    ]
+  },
+  "EDGE5": {
+    "day_count_convention": "actual_365",
+    "grace_period_days": 0,
+    "compounding": "monthly",
+    "late_fee_type": "flat_cents",
+    "late_fee_value": 5000,
+    "late_fee_cap_cents": null,
+    "late_fee_threshold_days": 30,
+    "interest_rate_schedule": [
+      {
+        "effective_date": "2023-01-01",
+        "annual_rate": 0.1
+      }
+    ],
+    "payment_allocation_order": [
+      "fees",
+      "interest",
+      "principal"
+    ]
+  },
+  "EDGE6": {
+    "day_count_convention": "actual_365",
+    "grace_period_days": 0,
+    "compounding": "monthly",
+    "late_fee_type": "flat_cents",
+    "late_fee_value": 5000,
+    "late_fee_cap_cents": null,
+    "late_fee_threshold_days": 30,
+    "interest_rate_schedule": [
+      {
+        "effective_date": "2024-01-01",
+        "annual_rate": 0.12
+      }
+    ],
+    "payment_allocation_order": [
+      "fees",
+      "interest",
+      "principal"
+    ]
+  },
+  "EDGE7": {
+    "day_count_convention": "actual_365",
+    "grace_period_days": 0,
+    "compounding": "simple",
+    "late_fee_type": "flat_cents",
+    "late_fee_value": 5000,
+    "late_fee_cap_cents": null,
+    "late_fee_threshold_days": 10,
+    "interest_rate_schedule": [
+      {
+        "effective_date": "2023-01-01",
+        "annual_rate": 0.1
+      }
+    ],
+    "payment_allocation_order": [
+      "fees",
+      "interest",
+      "principal"
+    ]
+  },
+  "EDGE7B": {
+    "day_count_convention": "actual_365",
+    "grace_period_days": 0,
+    "compounding": "simple",
+    "late_fee_type": "flat_cents",
+    "late_fee_value": 5000,
+    "late_fee_cap_cents": null,
+    "late_fee_threshold_days": 10,
+    "interest_rate_schedule": [
+      {
+        "effective_date": "2023-01-01",
+        "annual_rate": 0.1
+      }
+    ],
+    "payment_allocation_order": [
+      "principal",
+      "interest",
+      "fees"
+    ]
+  },
+  "EDGE8A": {
+    "day_count_convention": "actual_365",
+    "grace_period_days": 0,
+    "compounding": "simple",
+    "late_fee_type": "flat_cents",
+    "late_fee_value": 5000,
+    "late_fee_cap_cents": null,
+    "late_fee_threshold_days": 30,
+    "interest_rate_schedule": [
+      {
+        "effective_date": "2023-01-01",
+        "annual_rate": 0.1
+      }
+    ],
+    "payment_allocation_order": [
+      "fees",
+      "interest",
+      "principal"
+    ]
+  },
+  "EDGE8B": {
+    "day_count_convention": "actual_360",
+    "grace_period_days": 0,
+    "compounding": "simple",
+    "late_fee_type": "flat_cents",
+    "late_fee_value": 5000,
+    "late_fee_cap_cents": null,
+    "late_fee_threshold_days": 30,
+    "interest_rate_schedule": [
+      {
+        "effective_date": "2023-01-01",
+        "annual_rate": 0.1
+      }
+    ],
+    "payment_allocation_order": [
+      "fees",
+      "interest",
+      "principal"
+    ]
+  },
+  "EDGE9": {
+    "day_count_convention": "actual_365",
+    "grace_period_days": 0,
+    "compounding": "monthly",
+    "late_fee_type": "percent_of_principal",
+    "late_fee_value": 200,
+    "late_fee_cap_cents": null,
+    "late_fee_threshold_days": 20,
+    "interest_rate_schedule": [
+      {
+        "effective_date": "2023-01-01",
+        "annual_rate": 0.08
+      },
+      {
+        "effective_date": "2023-03-01",
+        "annual_rate": 0.15
+      }
+    ],
+    "payment_allocation_order": [
+      "fees",
+      "interest",
+      "principal"
+    ]
+  },
+  "EDGE10": {
+    "day_count_convention": "actual_365",
+    "grace_period_days": 0,
+    "compounding": "simple",
+    "late_fee_type": "flat_cents",
+    "late_fee_value": 5000,
+    "late_fee_cap_cents": null,
+    "late_fee_threshold_days": 30,
+    "interest_rate_schedule": [
+      {
+        "effective_date": "2023-01-01",
+        "annual_rate": 0.1
+      }
+    ],
+    "payment_allocation_order": [
+      "fees",
+      "interest",
+      "principal"
+    ]
+  },
+  "EDGE11": {
+    "day_count_convention": "actual_365",
+    "grace_period_days": 0,
+    "compounding": "simple",
+    "late_fee_type": "flat_cents",
+    "late_fee_value": 5000,
+    "late_fee_cap_cents": null,
+    "late_fee_threshold_days": 30,
+    "interest_rate_schedule": [
+      {
+        "effective_date": "2021-01-01",
+        "annual_rate": 0.0733
+      }
+    ],
+    "payment_allocation_order": [
+      "fees",
+      "interest",
+      "principal"
+    ]
+  },
+  "J0": {
+    "day_count_convention": "actual_365",
+    "grace_period_days": 15,
+    "compounding": "simple",
+    "late_fee_type": "percent_of_principal",
+    "late_fee_value": 300,
+    "late_fee_cap_cents": 100000,
+    "late_fee_threshold_days": 15,
+    "interest_rate_schedule": [
+      {
+        "effective_date": "2023-01-01",
+        "annual_rate": 0.0915
+      }
+    ],
+    "payment_allocation_order": [
+      "fees",
+      "interest",
+      "principal"
+    ]
+  },
+  "J1": {
+    "day_count_convention": "actual_365",
+    "grace_period_days": 0,
+    "compounding": "monthly",
+    "late_fee_type": "flat_cents",
+    "late_fee_value": 2500,
+    "late_fee_cap_cents": null,
+    "late_fee_threshold_days": 30,
+    "interest_rate_schedule": [
+      {
+        "effective_date": "2023-01-01",
+        "annual_rate": 0.075
+      }
+    ],
+    "payment_allocation_order": [
+      "interest",
+      "fees",
+      "principal"
+    ]
+  },
+  "J2": {
+    "day_count_convention": "actual_360",
+    "grace_period_days": 10,
+    "compounding": "simple",
+    "late_fee_type": "percent_of_principal",
+    "late_fee_value": 300,
+    "late_fee_cap_cents": 100000,
+    "late_fee_threshold_days": 30,
+    "interest_rate_schedule": [
+      {
+        "effective_date": "2023-01-01",
+        "annual_rate": 0.0811
+      },
+      {
+        "effective_date": "2023-04-12",
+        "annual_rate": 0.064
+      }
+    ],
+    "payment_allocation_order": [
+      "interest",
+      "fees",
+      "principal"
+    ]
+  },
+  "J3": {
+    "day_count_convention": "actual_365",
+    "grace_period_days": 0,
+    "compounding": "monthly",
+    "late_fee_type": "percent_of_principal",
+    "late_fee_value": 500,
+    "late_fee_cap_cents": 100000,
+    "late_fee_threshold_days": 45,
+    "interest_rate_schedule": [
+      {
+        "effective_date": "2023-01-01",
+        "annual_rate": 0.1643
+      }
+    ],
+    "payment_allocation_order": [
+      "interest",
+      "fees",
+      "principal"
+    ]
+  },
+  "J4": {
+    "day_count_convention": "actual_360",
+    "grace_period_days": 10,
+    "compounding": "simple",
+    "late_fee_type": "flat_cents",
+    "late_fee_value": 2500,
+    "late_fee_cap_cents": null,
+    "late_fee_threshold_days": 10,
+    "interest_rate_schedule": [
+      {
+        "effective_date": "2023-01-01",
+        "annual_rate": 0.0661
+      }
+    ],
+    "payment_allocation_order": [
+      "fees",
+      "interest",
+      "principal"
+    ]
+  }
+}

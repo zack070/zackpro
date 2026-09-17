@@ -1,0 +1,106 @@
+{
+  "J0": {
+    "day_count_convention": "actual_360",
+    "grace_period_days": 0,
+    "compounding": "monthly",
+    "late_fee_type": "percent_of_principal",
+    "late_fee_value": 1000,
+    "late_fee_cap_cents": 50000,
+    "late_fee_threshold_days": 15,
+    "interest_rate_schedule": [
+      {
+        "effective_date": "2023-01-01",
+        "annual_rate": 0.1083
+      },
+      {
+        "effective_date": "2023-03-18",
+        "annual_rate": 0.1522
+      }
+    ],
+    "payment_allocation_order": [
+      "interest",
+      "fees",
+      "principal"
+    ]
+  },
+  "J1": {
+    "day_count_convention": "actual_365",
+    "grace_period_days": 10,
+    "compounding": "simple",
+    "late_fee_type": "flat_cents",
+    "late_fee_value": 2500,
+    "late_fee_cap_cents": null,
+    "late_fee_threshold_days": 45,
+    "interest_rate_schedule": [
+      {
+        "effective_date": "2023-01-01",
+        "annual_rate": 0.0433
+      }
+    ],
+    "payment_allocation_order": [
+      "principal",
+      "fees",
+      "interest"
+    ]
+  },
+  "J2": {
+    "day_count_convention": "actual_360",
+    "grace_period_days": 5,
+    "compounding": "monthly",
+    "late_fee_type": "percent_of_principal",
+    "late_fee_value": 300,
+    "late_fee_cap_cents": 100000,
+    "late_fee_threshold_days": 15,
+    "interest_rate_schedule": [
+      {
+        "effective_date": "2023-01-01",
+        "annual_rate": 0.0694
+      }
+    ],
+    "payment_allocation_order": [
+      "interest",
+      "fees",
+      "principal"
+    ]
+  },
+  "J3": {
+    "day_count_convention": "actual_360",
+    "grace_period_days": 0,
+    "compounding": "monthly",
+    "late_fee_type": "percent_of_principal",
+    "late_fee_value": 300,
+    "late_fee_cap_cents": 100000,
+    "late_fee_threshold_days": 15,
+    "interest_rate_schedule": [
+      {
+        "effective_date": "2023-01-01",
+        "annual_rate": 0.1374
+      }
+    ],
+    "payment_allocation_order": [
+      "principal",
+      "fees",
+      "interest"
+    ]
+  },
+  "J4": {
+    "day_count_convention": "actual_360",
+    "grace_period_days": 10,
+    "compounding": "simple",
+    "late_fee_type": "percent_of_principal",
+    "late_fee_value": 1000,
+    "late_fee_cap_cents": null,
+    "late_fee_threshold_days": 30,
+    "interest_rate_schedule": [
+      {
+        "effective_date": "2023-01-01",
+        "annual_rate": 0.125
+      }
+    ],
+    "payment_allocation_order": [
+      "principal",
+      "fees",
+      "interest"
+    ]
+  }
+}
