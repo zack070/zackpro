@@ -24,11 +24,18 @@ secret to discover.
   $11,961.02) -- say that a quality bar exists and was calibrated by
   direct measurement, without giving the numbers.
 - Do not describe the reference solution's specific approach (simulated
-  annealing, or the bitmask-DP cross-check) -- it is fine, and probably
-  useful, to say that this is fundamentally a combinatorial
-  matching/partitioning problem and that sorting-and-greedy approaches
-  reliably leave real money unmatched, since that framing is a fair
-  description of the problem's nature, not a specific design to copy.
+  annealing, or the bitmask-DP cross-check), AND do not name or hint at
+  the underlying problem class (do not say "combinatorial matching,"
+  "subset-sum," "partitioning," "NP-hard," or similar, and do not say
+  that sorting-and-greedy approaches leave money unmatched). A prior task
+  built this session (field-service-dispatch) failed its real difficulty
+  probe (a live agent solved it 3 of 3 times at low effort) immediately
+  after its instruction was written to include exactly this kind of "fair
+  framing hint" -- recognizing the problem's true structure is a large
+  part of the actual difficulty here, not a neutral detail that's safe to
+  give away. State the deliverable, the rules, and that a quality bar
+  exists, and let the agent discover on their own that pairing-by-size
+  isn't enough.
 
 ## What the agent is given (all under /app)
 
@@ -42,12 +49,11 @@ secret to discover.
 - `data/sample_21/`, `data/sample_22/`, `data/sample_23/` -- three
   complete sample scenarios (`payments.csv`, `invoices.csv`), each with a
   different set of customers/amounts, for the agent to develop and test a
-  policy against locally. These are NOT the scenario used for grading.
-  Worth mentioning: every scenario spans many customers at once (dozens of
-  payments and invoices total), and getting a low cost on any one customer
-  requires deciding which of several payments combine to cover which
-  invoice -- not simply pairing the payment that looks closest in size to
-  each invoice.
+  policy against locally. These are NOT the scenario used for grading. It
+  is fine to state their scale plainly (how many customers, roughly how
+  many payments/invoices each) since that's just descriptive of the data
+  -- do not characterize what kind of reasoning or approach is needed to
+  do well on them.
 
 ## Required output
 
@@ -78,13 +84,11 @@ secret to discover.
   a nonexistent id -- is simply dropped, not an error).
 - There is a hidden pass/fail cost bar for the held-out scenario. It was
   calibrated by directly measuring several different approaches' real
-  performance on the held-out data -- multiple plausible sorting/greedy
-  strategies, and an approach that instead treats the batch as a genuine
-  combinatorial matching problem -- and confirming a substantial, real gap
-  between the best greedy approach and a policy that searches the problem
-  directly. State plainly that such a bar exists and must be cleared,
-  without stating its value or describing the reference approach's
-  specific algorithm.
+  performance on the held-out data and confirming a substantial, real gap
+  between the weaker and stronger ones. State plainly that such a bar
+  exists and must be cleared, without stating its value, without stating
+  how many or what kind of approaches were measured, and without
+  characterizing what distinguishes the weaker from the stronger ones.
 - `match` must be deterministic: the same inputs should always produce
   the same returned mapping. There is no live/interactive element to this
   task -- it is a single batch computation, not something called
@@ -103,9 +107,6 @@ secret to discover.
 The agent can write and run the scoring engine locally (it is plain
 Python, fully given) against the three sample scenarios to develop and
 iterate on a policy before submitting. There is no tool invocation
-required beyond writing ordinary Python and running it. Since a low cost
-requires genuinely partitioning payments among invoices (not just pairing
-by size), it's worth mentioning that the agent will likely need to write
-and test some kind of search or optimization approach rather than a single
-sorting pass -- exactly how to do that is part of what the agent needs to
-work out and validate against the sample scenarios.
+required beyond writing ordinary Python and running it. Do not say
+anything about what KIND of approach is likely to be needed (search,
+optimization, sorting, or otherwise) -- working that out is the task.
