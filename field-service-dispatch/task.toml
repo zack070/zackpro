@@ -23,7 +23,9 @@ category = "Operations"
 subcategory = "Logistics"
 tags = ["dispatch", "scheduling", "simulation", "workforce-management", "logistics", "discrete-event"]
 expert_time_estimate_hours = 5
-relevant_experience = "TODO: describe your own professional experience relevant to field-service dispatch, workforce scheduling, or operations that qualifies you to judge this task's realism and difficulty."
+relevant_experience = """
+I work as an operations and business data analyst (2024-present), where I have directly reviewed business scenarios involving logistics, dispatch, and resource allocation -- assessing routing, resource allocation, inventory levels, production constraints, and operational priorities using structured data analysis, and applying rule-based reasoning to determine correct outcomes under real operational constraints. This gives me a working sense of what a genuine field-service/workforce dispatch operation actually has to balance (technician availability, skill coverage, deadline pressure, overtime cost) and what a realistic versus contrived version of that tradeoff looks like. I also evaluate AI-generated business outputs against predefined criteria and have supported AI training/evaluation projects involving business reasoning and quality assurance across operational scenarios, which is directly relevant to judging whether this task's grading (a held-out simulation replay against a calibrated cost bar) is a fair and meaningful test rather than an arbitrary one. I am not an optimization or simulation engineer and have not previously built discrete-event simulators; the technical implementation (the simulator, the trace-replay verifier, and the calibration of the pass bar against measured baseline and reference policy performance) was built with AI assistance under my direction, with my own judgment applied to whether the scheduling rules and grading reflect a realistic dispatch operation.
+"""
 
 [verifier]
 timeout_sec = 180.0
