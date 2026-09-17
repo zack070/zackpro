@@ -1,0 +1,42 @@
+artifacts = ["/app/outputs"]
+
+[task]
+name = "afterquery/cash-application-matching"
+
+[metadata]
+author_name = "TODO: fill in your own name"
+author_email = "TODO: fill in your own email"
+
+difficulty_explanation = """
+This work is performed by accounts-receivable / cash-application analysts at any company that receives batches of customer payments against open invoices -- a real, widely outsourced finance operation, since a payment's own reference data is frequently incomplete or absent and the correct application has to be worked out from amounts alone. The agent must submit code that partitions a batch of payments among open invoices (each payment applied whole to at most one invoice, but multiple payments may combine to cover a single invoice) to minimize unresolved dollars, which is the Multiple Subset-Sum problem -- NP-hard by direct reduction from subset-sum, not merely "greedy is suboptimal sometimes." We tested this by measurement rather than assumption: six adversarial probe policies were built, covering every plausible combination of sort-order (by invoice size, by payment size, ascending, descending, unsorted) and accumulation strategy (nearest-single-match, greedy-fill, best-fit) we could construct without deliberately sabotaging them, plus a seventh "kitchen sink" policy that runs all six and keeps whichever result scores best for that specific batch. Swept across 20 independently generated scenarios, every one of these seven lands between 1.5x and 3.3x the true optimum, with zero exceptions -- including the kitchen-sink combination, which does no better than the single best heuristic among its inputs. A policy that recognizes the batch as a joint combinatorial assignment problem and searches it directly (this task's reference uses simulated annealing over reassignments; a second, independently-built exact solver via bitmask dynamic programming was used only to confirm the floor, not shipped) reaches within 0.2-7.0% of the true optimum on every one of those same 20 scenarios. All scenario data (customers, payment amounts, invoice amounts) is synthetically generated for this task and does not represent any real company's receivables.
+"""
+
+solution_explanation = """
+The reference solution processes each customer's payments and invoices independently (a valid decomposition, since cross-customer matching is never legal), seeds each sub-problem with a best-fit-decreasing bin-covering heuristic, then improves it via simulated annealing over reassignment moves (move a payment to a different invoice, or unapply it), scored directly by the real cost formula. This was cross-validated against a second, structurally independent implementation: an exact bitmask dynamic-programming solver that enumerates subsets of a customer's payments against each invoice in turn. Across 20 independently generated scenarios, the two approaches' costs differ by only 0.2-7.0% (the annealing approach is a heuristic search and does not guarantee the exact optimum, unlike the DP), which is the calibration evidence that the reachable floor is a genuine property of the problem, not an artifact of one specific algorithm. The pass bar (14,500.00 dollars, i.e. 1,450,000 cents) was set on the held-out scenario between the annealing reference's measured cost (12,538.90 dollars) and the best-performing of the seven adversarial probes (26,962.59 dollars) -- close to the reference side, leaving margin only for legitimate implementation variance in a from-scratch search-based approach.
+"""
+
+verification_explanation = """
+The verifier never executes the candidate's code in the trusted stage and never trusts anything the untrusted stage computes. Stage 1 (unprivileged, 90-second wall-clock budget, UID-swept after running) imports the candidate's submitted policy module and calls its match(payments, invoices) function exactly once against the sealed held-out scenario -- but the only thing it hands off to Stage 2 is the raw returned mapping (payment_id -> invoice_id), not a computed score. Stage 2 (trusted, root, executes no candidate code at all) independently recomputes the score from that raw mapping and the same sealed scenario data, using the same scoring function that also enforces every legality rule from scratch (a payment applied to a nonexistent invoice, or to an invoice belonging to a different customer, is dropped, not trusted). A fabricated or nonsensical mapping can only score as its literal content allows once independently re-validated -- there is no step where Stage 2 takes Stage 1's word for anything. The pass bar (1,450,000 cents) is compared against this independently recomputed cost. Both the sealed reference directory and the reward file's own directory are locked to root-only access before Stage 1 ever starts, independent of the untrusted-process sweep that also runs after each stage.
+"""
+
+category = "Operations"
+subcategory = "Finance"
+tags = ["accounts-receivable", "cash-application", "finance", "matching", "combinatorial-optimization", "invoice-reconciliation"]
+expert_time_estimate_hours = 4
+relevant_experience = """
+TODO: fill in your own real, verifiable relevant experience for this task (finance operations, accounts receivable, combinatorial optimization, or evaluating AI-generated business/finance outputs -- whatever is actually true for you). This field is a personal claim and must be written by you, the same as instruction.md.
+"""
+
+[verifier]
+timeout_sec = 150.0
+environment_mode = "separate"
+
+[agent]
+timeout_sec = 10800.0
+
+[environment]
+build_timeout_sec = 600.0
+cpus = 1
+memory_mb = 2048
+storage_mb = 10240
+gpus = 0

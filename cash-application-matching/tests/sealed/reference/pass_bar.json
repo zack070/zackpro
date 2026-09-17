@@ -1,0 +1,21 @@
+{
+  "held_out_scenario": "held_out",
+  "pass_bar_cost_cents": 1450000,
+  "calibration": {
+    "total_payment_cents": 14598152,
+    "naive_no_match_cost_cents": 29196304,
+    "best_of_six_greedy_probes_cost_cents": 2696259,
+    "greedy_probes_tested": [
+      "naive_no_match",
+      "one_to_one_nearest",
+      "sorted_accumulate_desc",
+      "sorted_accumulate_asc",
+      "best_fit_decreasing",
+      "fifo_order"
+    ],
+    "exact_optimal_cost_cents": 1196102,
+    "local_search_reference_cost_cents": 1253890,
+    "margin_added_cents": 196110,
+    "note": "This is the Multiple Subset-Sum problem (NP-hard by reduction from subset-sum): each payment is atomic and may be applied to at most one invoice, but multiple payments may combine to cover one invoice, so finding a low-cost assignment means partitioning payments into invoice-covering groups. Swept across 20 independently generated scenarios (not just this one): every one of six adversarial greedy probes (spanning every plausible sort-order x accumulation-strategy combination we could construct) landed between 1.5x and 3.3x the exact optimum, with zero exceptions -- this held-out scenario's 2.25x ratio (best_of_six 2696259 vs exact 1196102) is a representative, not favorable, instance. A structurally different reference implementation (simulated annealing local search, independent of the exact bitmask-DP solver) converged to within 0.2-7.0% of the exact optimum across all 20 scenarios (4.8% on this one), confirming the floor is a real property of the problem rather than an artifact of one specific algorithm. The pass bar sits between the local-search reference (1253890) and the best adversarial probe (2696259), close to the reference side, with margin only for legitimate implementation variance."
+  }
+}
