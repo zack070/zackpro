@@ -2,15 +2,23 @@
 # Verifier entry point. Runs as root. Never uses set -e: every path,
 # including a crash or timeout in stage 1, must still reach the point
 # where reward.txt gets written.
+#
+# The reward file MUST be written to /work/reward.txt -- this is the
+# path the platform actually checks (confirmed directly from a
+# RewardFileNotFoundError naming ".../verifier/reward.txt" under the
+# job's mapped work directory). An earlier version of this script wrote
+# it to /logs/verifier/reward.txt instead, which is a path the platform
+# never looks at -- so it reported every run (including a correct
+# reference solution) as reward-less/failed regardless of what the
+# candidate code actually did. That was the real bug behind two rounds
+# of failed "reference must score 1" checks; chasing solve.sh's shell
+# portability in the meantime fixed a real but unrelated issue.
 
-REWARD_DIR=/logs/verifier
-REWARD_FILE="$REWARD_DIR/reward.txt"
 WORK_DIR=/work
-CTRF_FILE="$REWARD_DIR/ctrf.json"
+REWARD_FILE="$WORK_DIR/reward.txt"
+CTRF_FILE="$WORK_DIR/ctrf.json"
 
-mkdir -p "$REWARD_DIR" "$WORK_DIR"
-chown root:root "$REWARD_DIR"
-chmod 700 "$REWARD_DIR"
+mkdir -p "$WORK_DIR"
 
 # Seal the hidden pass-bar/calibration data before stage 1 (untrusted)
 # ever runs. The held-out INPUT scenario (sealed/inputs) is left
@@ -22,13 +30,19 @@ chmod 700 /tests/sealed/reference
 find /tests/sealed/reference -type f -exec chmod 600 {} \;
 find /tests/sealed/reference -type d -exec chmod 700 {} \;
 
-chown runner:runner "$WORK_DIR"
-chmod 700 "$WORK_DIR"
+# /work must be writable by the untrusted runner user (stage 1 writes
+# output.json there), but the STICKY bit prevents that same user from
+# deleting or replacing reward.txt once stage 2 (root) writes it --
+# without it, owning write+execute on the parent directory would let
+# runner (or a leftover forked process under that UID) remove/replace a
+# root-owned file inside it, permission bits on the file notwithstanding.
+chown root:runner "$WORK_DIR"
+chmod 1770 "$WORK_DIR"
 
 write_reward() {
   echo -n "$1" > "$REWARD_FILE"
   chown root:root "$REWARD_FILE"
-  chmod 600 "$REWARD_FILE"
+  chmod 644 "$REWARD_FILE"
 }
 
 # --- Stage 1: untrusted. Executes the candidate's policy code, isolated
