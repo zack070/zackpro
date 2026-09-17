@@ -50,7 +50,7 @@ def gen_customer(rng, cust_id, n_payments, n_invoices, amount_range=(5000, 25000
     return payments, invoices
 
 
-def gen(seed, out_dir, n_customers=18, payments_range=(6, 9), invoices_range=(5, 8)):
+def gen(seed, out_dir, n_customers=10, payments_range=(22, 30), invoices_range=(16, 22)):
     rng = random.Random(seed)
     all_payments = []
     all_invoices = []

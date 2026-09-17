@@ -18,11 +18,11 @@ secret to discover.
   (10800 must match `[agent].timeout_sec` in task.toml.)
 - Keep the whole file well under ~10,000 characters, and avoid restating
   `environment/engine/README.md`'s contract in full.
-- Do not state the exact pass bar (1,450,000 cents / $14,500.00), or any
+- Do not state the exact pass bar (2,030,000 cents / $20,300.00), or any
   of the calibration numbers measured on the held-out scenario (best
-  adversarial probe $26,962.59, reference $12,538.90, exact optimum
-  $11,961.02) -- say that a quality bar exists and was calibrated by
-  direct measurement, without giving the numbers.
+  adversarial probe $55,077.92, combined reference $12,006.90) -- say that
+  a quality bar exists and was calibrated by direct measurement, without
+  giving the numbers.
 - Do not describe the reference solution's specific approach (simulated
   annealing, or the bitmask-DP cross-check), AND do not name or hint at
   the underlying problem class (do not say "combinatorial matching,"
@@ -46,7 +46,7 @@ secret to discover.
 - `engine/engine.py` -- the actual executable implementation of that
   contract; the agent can read or import it directly (e.g. to write their
   own local scoring harness against the sample scenarios).
-- `data/sample_21/`, `data/sample_22/`, `data/sample_23/` -- three
+- `data/sample_51/`, `data/sample_52/`, `data/sample_53/` -- three
   complete sample scenarios (`payments.csv`, `invoices.csv`), each with a
   different set of customers/amounts, for the agent to develop and test a
   policy against locally. These are NOT the scenario used for grading. It

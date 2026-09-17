@@ -1,10 +1,10 @@
 {
   "held_out_scenario": "held_out",
-  "pass_bar_cost_cents": 1450000,
+  "pass_bar_cost_cents": 2030000,
   "calibration": {
-    "total_payment_cents": 14598152,
-    "naive_no_match_cost_cents": 29196304,
-    "best_of_six_greedy_probes_cost_cents": 2696259,
+    "total_payment_cents": 25396903,
+    "naive_no_match_cost_cents": 50783856,
+    "best_of_six_greedy_probes_cost_cents": 5507792,
     "greedy_probes_tested": [
       "naive_no_match",
       "one_to_one_nearest",
@@ -13,9 +13,15 @@
       "best_fit_decreasing",
       "fifo_order"
     ],
-    "exact_optimal_cost_cents": 1196102,
-    "local_search_reference_cost_cents": 1253890,
-    "margin_added_cents": 196110,
-    "note": "This is the Multiple Subset-Sum problem (NP-hard by reduction from subset-sum): each payment is atomic and may be applied to at most one invoice, but multiple payments may combine to cover one invoice, so finding a low-cost assignment means partitioning payments into invoice-covering groups. Swept across 20 independently generated scenarios (not just this one): every one of six adversarial greedy probes (spanning every plausible sort-order x accumulation-strategy combination we could construct) landed between 1.5x and 3.3x the exact optimum, with zero exceptions -- this held-out scenario's 2.25x ratio (best_of_six 2696259 vs exact 1196102) is a representative, not favorable, instance. A structurally different reference implementation (simulated annealing local search, independent of the exact bitmask-DP solver) converged to within 0.2-7.0% of the exact optimum across all 20 scenarios (4.8% on this one), confirming the floor is a real property of the problem rather than an artifact of one specific algorithm. The pass bar sits between the local-search reference (1253890) and the best adversarial probe (2696259), close to the reference side, with margin only for legitimate implementation variance."
+    "combined_reference_cost_cents": 1200690,
+    "quick_single_pass_at_various_effort_levels_cost_cents": {
+      "200_iterations": 4574545,
+      "500_iterations": 3461790,
+      "1500_iterations": 2550621,
+      "3000_iterations": 1812296,
+      "6000_iterations": 1662572
+    },
+    "margin_added_cents": 829310,
+    "note": "Per-customer instances here (20-30 payments, 15-22 invoices, 10 customers per scenario) are sized specifically so exact solving is impractical: a bitmask/subset dynamic-programming solver (the textbook approach for subset-sum-family problems) was measured directly on this scenario family and takes 17s at n=15 payments and exceeds 120s (did not finish) at n=18 -- these scenarios use n=20-30, well past that threshold. Swept across 15 independently generated scenarios (not just this one): six adversarial greedy probes land at 16.1%-22.6% of total payment value uncleared with zero exceptions, while two structurally independent search algorithms (simulated annealing over single reassignments; GRASP-style randomized construction with large-neighborhood-search repair) both converge to 3.7%-5.7% when properly tuned (many iterations/restarts) -- a robust 3.4x-5.4x gap on every scenario tried. Effort sensitivity was also measured directly on this held-out scenario: a single annealing pass with only 200-1500 iterations (a quick, minimally-tuned first attempt) lands at 10.0%-18.0%, only reaching the bar's territory at 3000+ iterations (7.1%) -- genuine iterative refinement against measured results is required, a single naive implementation is not sufficient. The pass bar sits between the quick-attempt range and the tuned reference, requiring real experimentation without requiring exact optimality (which is not computationally reachable at this scale)."
   }
 }

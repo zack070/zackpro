@@ -14,9 +14,9 @@ The engine's rules matter when deciding what to return. Payments are indivisible
 
 There are three sample batches available for local testing:
 
-`/app/data/sample_21/`
-`/app/data/sample_22/`
-`/app/data/sample_23/`
+`/app/data/sample_51/`
+`/app/data/sample_52/`
+`/app/data/sample_53/`
 
 Each contains `payments.csv` and `invoices.csv`. They cover different customers and amounts and are not the batch used for grading. Run your policy against all three and inspect the actual scores before submitting.
 
