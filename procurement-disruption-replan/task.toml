@@ -23,7 +23,9 @@ category = "Operations"
 subcategory = "Supply Chain"
 tags = ["procurement", "supply-chain", "optimization", "mixed-integer-programming", "debugging", "disruption-recovery"]
 expert_time_estimate_hours = 6
-relevant_experience = "TODO: describe your own professional experience with procurement/supply-chain planning, inventory/cash accounting, or operations-research optimization that qualifies you to judge this task's realism and difficulty."
+relevant_experience = """
+I work as an operations and business data analyst (2024-present), reviewing procurement, inventory management, logistics, and financial-operations scenarios and applying structured, rule-based reasoning to determine correct outcomes. This includes validating large operational and financial datasets for accuracy and consistency (missing values, duplicates, misclassifications) and performing quantitative analysis of costs, volumes, and performance trends to support operational decisions. I also evaluate AI-generated business and financial outputs against predefined criteria -- checking calculations, assumptions, and compliance with stated requirements -- across data-classification and quality-assurance projects, which is directly relevant to judging whether this task's operational contract (purchase-order timing, payment terms, supplier capacity, and cash constraints) reflects realistic procurement practice and whether an agent's output can be judged correctly against it. I am not an optimization or backend engineer and have not previously built combinatorial-optimization solvers; the technical implementation (the MILP reference solver, the replay/accounting engine, and the sealed verifier) was built with AI assistance under my direction, with my own judgment applied to whether the operational rules, data, and grading reflect real procurement practice.
+"""
 
 [verifier]
 timeout_sec = 300.0
