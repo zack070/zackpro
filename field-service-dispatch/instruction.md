@@ -1,0 +1,27 @@
+Technician Scheduling Policy
+You are working in `/app` on a technician scheduling policy task. The simulator is already implemented. Your job is to create the scheduling policy that will be evaluated by running it through the real simulator.
+The complete simulator contract is documented in `/app/sim/README.md`. Treat that document as authoritative for all scheduling rules, timing behavior, technician fatigue, SLA handling, overtime, and scoring. The executable implementation is available at `/app/sim/simulator.py`, so inspect it whenever the behavior or interface needs clarification. Your policy should work with the simulator as provided rather than changing the simulator itself.
+Your submission is:
+`/app/outputs/policy.py`
+The module must expose exactly one required entry point:
+`def decide(state) -> list[tuple[str, str]]`
+The simulator calls this function when a scheduling decision is needed. It is called at shift start and whenever a technician becomes free or a job arrives, provided there is at least one free technician and at least one pending job.
+The supplied `state` contains the current scheduling information. In particular, `current_time`, `free_technicians`, and `pending_jobs` are available, with the technician and job fields defined by the simulator's `TechSnapshot` and `JobSnapshot` structures. Technician information includes identifiers, skills, continuous work, shift limits, and overtime information. Job information includes its identifier, required skill, duration, priority, deadline, arrival time, and `is_followup`, which identifies a cascade-spawned follow-up job. Use the exact field names and types exposed by the simulator.
+Each decision should return the assignments to make immediately as `(technician_id, job_id)` pairs. Returning `[]` means that no assignment is made at that point. You may organize the implementation however you like and may use helper functions, classes, or internal state, but the simulator will only call `decide`.
+The important part of the task is not simply producing syntactically valid Python. The policy needs to make good scheduling decisions under the simulator's actual rules. Read the contract and implementation carefully, then experiment with different decision strategies and measure their effects rather than assuming that an apparently sensible rule will perform well.
+Three complete development scenarios are provided under:
+
+* `/app/data/sample_56/`
+* `/app/data/sample_61/`
+* `/app/data/sample_15/`
+
+Each contains its own technician roster, jobs, and configuration. These scenarios are available for local experimentation, but they are not the scenario used for final grading. A policy that performs well on only one visible sample may therefore fail to generalize to the held-out workload.
+The simulator is ordinary Python and can be run locally. A useful workflow is to inspect `sim/README.md` and `sim/simulator.py`, understand the state transitions and scoring behavior, implement an initial policy, then run it against all three supplied scenarios. Compare the resulting outcomes, identify weaknesses, and iterate. You can also build small local experiments around the simulator if that makes it easier to compare policies or edge cases.
+Final grading imports `/app/outputs/policy.py` and runs `decide(state)` through the actual simulator on a held-out shift scenario. The held-out scenario is not provided to you and uses a different technician and job mix from the supplied development scenarios. The grader independently replays the assignments produced by your policy and evaluates the resulting schedule under the simulator's rules.
+Only the assignments actually returned by `decide()` matter to the schedule being scored. If a returned assignment is not legal at the moment it is produced, such as assigning a technician who is not free or assigning a technician without the required skill, the replay will not apply that assignment. If the same technician or job appears more than once in a single returned list, only its first occurrence is honored. Your policy should therefore rely on the state it receives and produce assignments that are valid at that moment.
+There is a hidden cost threshold for the held-out scenario. It was established from measured performance of baseline and reference policies and is intended to separate policies that merely function from policies that achieve substantially better scheduling results. Clearing this quality bar is part of the task. The exact threshold and the held-out scenario are not disclosed.
+The policy must also be deterministic. Given the same state, `decide()` should return the same list every time. Avoid behavior that depends on wall-clock time, unseeded randomness, changing external data, or other uncontrolled state. Determinism matters because the grader replays the policy's decisions.
+A submission that cannot be imported, does not define `decide`, or raises an exception while `decide()` is being called is considered a failed submission. Before submitting, run the module through the supplied simulator and make sure the complete policy can execute without errors.
+Focus your work on `/app/outputs/policy.py`. Do not modify the simulator or rely on changes to the grading environment. Use the visible scenarios to validate your implementation, but design the policy with the held-out scenario in mind rather than tuning it only to the examples.
+
+You have 10800 seconds to complete this task. Do not cheat by using online solutions or hints specific to this task.
