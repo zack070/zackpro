@@ -4,16 +4,16 @@
 # pytest + pytest-json-ctrf are installed directly into the system
 # interpreter in this dev environment (no separate venv needed here).
 #
-# reward.txt lives at /work/reward.txt -- this is the path the real
-# platform actually checks (confirmed via a RewardFileNotFoundError
-# naming ".../verifier/reward.txt" under the job's mapped work
-# directory, which maps to this container's /work). An earlier version
-# of both this harness and tests/test.sh used /logs/verifier/reward.txt
-# instead, which this local harness happily validated (it just cats
-# whatever path test.sh itself writes to) while the real platform never
-# looked there at all -- so a passing local run gave false confidence.
-# test.sh itself is the source of truth for the reward path; this
-# harness only reads it back to report the result.
+# Which exact path the platform checks for reward.txt could not be
+# confirmed directly in this dev environment (no working Docker
+# registry access to build and run the real image). Two different
+# single-path guesses both produced an identical RewardFileNotFoundError
+# from the platform, which is why test.sh now writes the reward to
+# every plausible candidate location at once
+# (/work, /work/verifier, /logs/verifier -- both .txt and .json). This
+# harness checks all of them below rather than assuming one.
+# test.sh itself is the source of truth for the reward paths; this
+# harness only reads them back to report the result.
 #
 # Usage: dev/local_harness.sh <policy.py to submit as /app/outputs/policy.py>
 set -uo pipefail
@@ -33,8 +33,13 @@ id runner >/dev/null 2>&1 || useradd -m -u 1001 -s /bin/bash runner
 
 echo "=== running tests/test.sh against $POLICY_FILE ==="
 bash /tests/test.sh
-echo "=== reward.txt ==="
-cat /work/reward.txt
-echo
+echo "=== reward (all candidate locations) ==="
+for f in /work/reward.txt /work/reward.json /work/verifier/reward.txt /work/verifier/reward.json /logs/verifier/reward.txt /logs/verifier/reward.json; do
+  if [ -f "$f" ]; then
+    echo "$f: $(cat "$f")"
+  else
+    echo "$f: MISSING"
+  fi
+done
 echo "=== orphaned runner processes ==="
 ps -u runner || echo "(none)"

@@ -3,20 +3,19 @@
 # including a crash or timeout in stage 1, must still reach the point
 # where reward.txt gets written.
 #
-# The reward file MUST be written to /work/reward.txt -- this is the
-# path the platform actually checks (confirmed directly from a
-# RewardFileNotFoundError naming ".../verifier/reward.txt" under the
-# job's mapped work directory). An earlier version of this script wrote
-# it to /logs/verifier/reward.txt instead, which is a path the platform
-# never looks at -- so it reported every run (including a correct
-# reference solution) as reward-less/failed regardless of what the
-# candidate code actually did. That was the real bug behind two rounds
-# of failed "reference must score 1" checks; chasing solve.sh's shell
-# portability in the meantime fixed a real but unrelated issue.
-
+# Which exact path the platform checks for the reward file has not been
+# possible to confirm directly (no Docker registry access in this dev
+# environment to build and run the real image; two different guesses --
+# /logs/verifier/reward.txt, then /work/reward.txt -- both produced an
+# identical RewardFileNotFoundError naming ".../verifier/reward.txt"
+# under the job's mapped work directory). Rather than guess a third
+# single path, write the reward (as both reward.txt and reward.json,
+# since the platform's own error accepts either) to every plausible
+# candidate location at once. This is cheap (a few bytes) and makes the
+# verifier robust to whichever convention is actually in effect.
 WORK_DIR=/work
-REWARD_FILE="$WORK_DIR/reward.txt"
 CTRF_FILE="$WORK_DIR/ctrf.json"
+REWARD_CANDIDATE_DIRS="/work /work/verifier /logs/verifier"
 
 mkdir -p "$WORK_DIR"
 
@@ -40,9 +39,18 @@ chown root:runner "$WORK_DIR"
 chmod 1770 "$WORK_DIR"
 
 write_reward() {
-  echo -n "$1" > "$REWARD_FILE"
-  chown root:root "$REWARD_FILE"
-  chmod 644 "$REWARD_FILE"
+  for dir in $REWARD_CANDIDATE_DIRS; do
+    mkdir -p "$dir" 2>/dev/null || continue
+    # Give the untrusted runner user write access to create files under
+    # a candidate dir (needed for /work, harmless elsewhere), but keep
+    # the sticky bit so it can't delete/replace what root writes here.
+    chown root:runner "$dir" 2>/dev/null
+    chmod 1770 "$dir" 2>/dev/null
+    echo -n "$1" > "$dir/reward.txt" 2>/dev/null
+    echo -n "$1" > "$dir/reward.json" 2>/dev/null
+    chown root:root "$dir/reward.txt" "$dir/reward.json" 2>/dev/null
+    chmod 644 "$dir/reward.txt" "$dir/reward.json" 2>/dev/null
+  done
 }
 
 # --- Stage 1: untrusted. Executes the candidate's policy code, isolated
