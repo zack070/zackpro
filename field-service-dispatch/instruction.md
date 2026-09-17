@@ -12,9 +12,9 @@ There is one small replay detail to keep in mind. An assignment that is not lega
 
 You have three scenarios to work with:
 
-`/app/data/sample_24/`
-`/app/data/sample_13/`
-`/app/data/sample_97/`
+`/app/data/sample_45/`
+`/app/data/sample_87/`
+`/app/data/sample_150/`
 
 Run the policy against all three. They are only development cases, though. The grader uses a different shift, with its own technicians and jobs, so don't build something that depends on the particular contents of these samples.
 
